@@ -1,0 +1,352 @@
+:root {
+    --color-bg: #050505;
+    --color-surface: rgba(20, 15, 30, 0.6);
+    --color-surface-hover: rgba(30, 20, 50, 0.8);
+    --color-text: #E0E0E0;
+    --color-purple: #6b21a8;
+    --color-purple-light: #9333ea;
+    --color-gold: #FFD700;
+    --color-gold-dark: #b8860b;
+    --color-black: #000000;
+    --font-heading: 'Oswald', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --glass-border: 1px solid rgba(147, 51, 234, 0.2);
+    --gold-glow: 0 0 10px rgba(255, 215, 0, 0.5);
+    --purple-glow: 0 0 15px rgba(107, 33, 168, 0.6);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Background Image with Overlay */
+.background-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('assets/toji_bg.jpg');
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    z-index: -1;
+    opacity: 0.25;
+    /* Gradient overlay to integrate the image with the black background */
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
+    filter: grayscale(20%) sepia(30%) hue-rotate(240deg) saturate(1.5) contrast(1.2); /* Tint slightly purple */
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* Typography & Hero */
+.hero {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-top: 4rem;
+    animation: fadeInDown 1s ease forwards;
+}
+
+.title {
+    font-family: var(--font-heading);
+    font-size: 3.5rem;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin-bottom: 0.5rem;
+    color: var(--color-text);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+}
+
+.highlight-gold {
+    color: var(--color-gold);
+    text-shadow: var(--gold-glow);
+}
+
+.highlight-purple {
+    color: var(--color-purple-light);
+    text-shadow: var(--purple-glow);
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: #a0a0a0;
+    max-width: 600px;
+    margin: 0 auto;
+    font-weight: 300;
+}
+
+/* Philosophy Section */
+.philosophy {
+    background: var(--color-surface);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: var(--glass-border);
+    border-left: 4px solid var(--color-gold);
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 3rem;
+    animation: fadeIn 1.2s ease forwards;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.section-title {
+    font-family: var(--font-heading);
+    color: var(--color-gold);
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Tabs */
+.training-schedule {
+    animation: fadeInUp 1.4s ease forwards;
+}
+
+.tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    background: rgba(10, 10, 10, 0.8);
+    color: var(--color-text);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.8rem 1.5rem;
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.tab-btn:hover {
+    background: rgba(20, 20, 20, 0.9);
+    border-color: var(--color-purple);
+    box-shadow: 0 0 10px rgba(107, 33, 168, 0.3);
+}
+
+.tab-btn.active {
+    background: var(--color-purple);
+    color: #fff;
+    border-color: var(--color-purple-light);
+    box-shadow: var(--purple-glow);
+    font-weight: 600;
+}
+
+/* Tab Content */
+.tab-content {
+    display: none;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Workout Cards */
+.workout-card {
+    background: var(--color-surface);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: var(--glass-border);
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+}
+
+.workout-title {
+    font-family: var(--font-heading);
+    color: var(--color-purple-light);
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(147, 51, 234, 0.3);
+    padding-bottom: 0.5rem;
+}
+
+/* Exercise List */
+.exercise-list {
+    list-style: none;
+}
+
+.exercise-item {
+    margin-bottom: 1.2rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.exercise-item:hover {
+    border-color: rgba(255, 215, 0, 0.3); /* Gold hover effect */
+    transform: translateX(5px);
+}
+
+/* Custom Checkbox */
+.custom-checkbox {
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    gap: 1rem;
+}
+
+.custom-checkbox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: relative;
+    height: 24px;
+    width: 24px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.5); /* Gold border */
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.custom-checkbox:hover input ~ .checkmark {
+    background-color: rgba(255, 215, 0, 0.1);
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+.custom-checkbox input:checked ~ .checkmark {
+    background-color: var(--color-purple);
+    border-color: var(--color-purple-light);
+    box-shadow: var(--purple-glow);
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 8px;
+    top: 4px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.custom-checkbox input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Exercise Info */
+.exercise-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.exercise-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #fff;
+    transition: color 0.3s ease;
+}
+
+.exercise-reps {
+    font-size: 0.9rem;
+    color: var(--color-gold);
+    margin-top: 0.2rem;
+    font-family: var(--font-heading);
+    letter-spacing: 0.5px;
+}
+
+.custom-checkbox input:checked ~ .exercise-info .exercise-name {
+    color: #888;
+    text-decoration: line-through;
+}
+
+/* Progress Bar */
+.progress-section {
+    margin-top: 3rem;
+    background: var(--color-surface);
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: var(--glass-border);
+    text-align: center;
+}
+
+.progress-section p {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    color: var(--color-gold);
+}
+
+.progress-bar-bg {
+    width: 100%;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-purple), var(--color-gold));
+    width: 0%;
+    transition: width 0.4s ease-out;
+    box-shadow: var(--purple-glow);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .title {
+        font-size: 2.5rem;
+    }
+    
+    .container {
+        padding: 1rem;
+    }
+    
+    .tabs {
+        flex-direction: column;
+    }
+}

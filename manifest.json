@@ -1,0 +1,17 @@
+{
+    "name": "Protocolo Restrição Celestial",
+    "short_name": "Toji Protocol",
+    "description": "Treinamento focado em força bruta e explosão, inspirado no Toji Fushiguro.",
+    "start_url": "/index.html",
+    "display": "standalone",
+    "background_color": "#050505",
+    "theme_color": "#050505",
+    "icons": [
+        {
+            "src": "assets/icon_512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}
