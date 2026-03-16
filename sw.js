@@ -1,12 +1,13 @@
-const CACHE_NAME = 'toji-protocol-v2';
+const CACHE_NAME = 'toji-protocol-v3';
+const BASE_PATH = self.registration.scope;
 const ASSETS_TO_CACHE = [
-    '/',
-    '/index.html',
-    '/style.css',
-    '/script.js',
-    '/manifest.json',
-    '/assets/toji_bg.jpg',
-    '/assets/icon_512.png',
+    './',
+    './index.html',
+    './style.css',
+    './script.js',
+    './manifest.json',
+    './assets/toji_bg.jpg',
+    './assets/icon_512.png',
     'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Oswald:wght@500;700&display=swap'
 ];
 
@@ -51,7 +52,7 @@ self.addEventListener('fetch', event => {
             }).catch(() => {
                 // If offline and not in cache, return a fallback for HTML pages
                 if (event.request.destination === 'document') {
-                    return caches.match('/index.html');
+                    return caches.match('./index.html');
                 }
             });
         })
