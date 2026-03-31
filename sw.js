@@ -1,4 +1,4 @@
-const CACHE_NAME = 'toji-protocol-v3';
+const CACHE_NAME = 'toji-protocol-v4';
 const BASE_PATH = self.registration.scope;
 const ASSETS_TO_CACHE = [
     './',
@@ -8,7 +8,7 @@ const ASSETS_TO_CACHE = [
     './manifest.json',
     './assets/toji_bg.jpg',
     './assets/icon_512.png',
-    'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Oswald:wght@500;700&display=swap'
+    'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Oswald:wght@500;700&family=Noto+Serif+JP:wght@400;700;900&display=swap'
 ];
 
 // Install: cache all core assets

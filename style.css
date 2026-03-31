@@ -1,16 +1,18 @@
 :root {
     --color-bg: #050505;
-    --color-surface: rgba(20, 15, 30, 0.6);
-    --color-surface-hover: rgba(30, 20, 50, 0.8);
+    --color-surface: rgba(15, 12, 20, 0.75);
+    --color-surface-hover: rgba(25, 18, 40, 0.85);
     --color-text: #E0E0E0;
     --color-purple: #6b21a8;
     --color-purple-light: #9333ea;
     --color-gold: #FFD700;
     --color-gold-dark: #b8860b;
-    --color-black: #000000;
+    --color-blood: #8B0000;
+    --color-ink: #1a1a2e;
     --font-heading: 'Oswald', sans-serif;
     --font-body: 'Inter', sans-serif;
-    --glass-border: 1px solid rgba(147, 51, 234, 0.2);
+    --font-jp: 'Noto Serif JP', serif;
+    --glass-border: 1px solid rgba(147, 51, 234, 0.15);
     --gold-glow: 0 0 10px rgba(255, 215, 0, 0.5);
     --purple-glow: 0 0 15px rgba(107, 33, 168, 0.6);
 }
@@ -30,7 +32,7 @@ body {
     position: relative;
 }
 
-/* Background Image with Overlay */
+/* Background */
 .background-overlay {
     position: fixed;
     top: 0;
@@ -42,30 +44,79 @@ body {
     background-position: center top;
     background-repeat: no-repeat;
     z-index: -1;
-    opacity: 0.25;
-    /* Gradient overlay to integrate the image with the black background */
-    mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
-    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 100%);
-    filter: grayscale(20%) sepia(30%) hue-rotate(240deg) saturate(1.5) contrast(1.2); /* Tint slightly purple */
+    opacity: 0.15;
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 80%);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 80%);
+    filter: grayscale(30%) sepia(20%) hue-rotate(240deg) saturate(1.2) contrast(1.1);
+}
+
+/* Floating Kanji */
+.kanji-float {
+    position: fixed;
+    font-family: var(--font-jp);
+    font-weight: 900;
+    color: rgba(107, 33, 168, 0.04);
+    z-index: -1;
+    user-select: none;
+    pointer-events: none;
+}
+
+.kanji-1 {
+    font-size: 20rem;
+    top: 5%;
+    right: -5%;
+    transform: rotate(-15deg);
+}
+
+.kanji-2 {
+    font-size: 15rem;
+    top: 40%;
+    left: -8%;
+    transform: rotate(10deg);
+}
+
+.kanji-3 {
+    font-size: 18rem;
+    bottom: 20%;
+    right: -3%;
+    transform: rotate(-8deg);
+}
+
+.kanji-4 {
+    font-size: 12rem;
+    bottom: 5%;
+    left: -5%;
+    transform: rotate(20deg);
 }
 
 .container {
-    max-width: 800px;
+    max-width: 860px;
     margin: 0 auto;
     padding: 2rem;
 }
 
-/* Typography & Hero */
+/* ===== HERO ===== */
 .hero {
     text-align: center;
-    margin-bottom: 3rem;
-    padding-top: 4rem;
+    margin-bottom: 2rem;
+    padding-top: 3rem;
     animation: fadeInDown 1s ease forwards;
+    position: relative;
+}
+
+.hero-kanji {
+    font-family: var(--font-jp);
+    font-size: 5rem;
+    font-weight: 900;
+    color: rgba(255, 215, 0, 0.08);
+    letter-spacing: 1rem;
+    margin-bottom: -1.5rem;
+    user-select: none;
 }
 
 .title {
     font-family: var(--font-heading);
-    font-size: 3.5rem;
+    font-size: 3.2rem;
     text-transform: uppercase;
     letter-spacing: 4px;
     margin-bottom: 0.5rem;
@@ -83,45 +134,238 @@ body {
     text-shadow: var(--purple-glow);
 }
 
+.subtitle-jp {
+    font-family: var(--font-jp);
+    font-size: 1rem;
+    color: var(--color-gold);
+    opacity: 0.7;
+    margin-bottom: 0.3rem;
+    letter-spacing: 2px;
+}
+
 .subtitle {
-    font-size: 1.1rem;
-    color: #a0a0a0;
+    font-size: 1rem;
+    color: #888;
     max-width: 600px;
-    margin: 0 auto;
+    margin: 0 auto 2rem;
     font-weight: 300;
 }
 
-/* Philosophy Section */
-.philosophy {
-    background: var(--color-surface);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: var(--glass-border);
-    border-left: 4px solid var(--color-gold);
-    padding: 2rem;
-    border-radius: 8px;
-    margin-bottom: 3rem;
-    animation: fadeIn 1.2s ease forwards;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+.hero-image {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+}
+
+.toji-hero-img {
+    max-width: 380px;
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(107, 33, 168, 0.3), 0 0 0 1px rgba(147, 51, 234, 0.2);
+    filter: contrast(1.05) saturate(1.1);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.toji-hero-img:hover {
+    transform: scale(1.02);
+    box-shadow: 0 25px 70px rgba(107, 33, 168, 0.4), 0 0 0 1px rgba(147, 51, 234, 0.3);
+}
+
+/* ===== BRUSH DIVIDER ===== */
+.brush-divider {
+    width: 100%;
+    height: 3px;
+    margin: 3rem 0;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        rgba(107, 33, 168, 0.1) 10%,
+        rgba(255, 215, 0, 0.4) 30%,
+        var(--color-gold) 50%,
+        rgba(255, 215, 0, 0.4) 70%,
+        rgba(107, 33, 168, 0.1) 90%,
+        transparent 100%
+    );
+    border: none;
+    position: relative;
+}
+
+.brush-divider::before {
+    content: '━';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--font-jp);
+    font-size: 1.5rem;
+    color: var(--color-gold);
+    background: var(--color-bg);
+    padding: 0 1rem;
+    opacity: 0.5;
+}
+
+/* ===== SECTION HEADERS ===== */
+.section-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.kanji-label {
+    display: block;
+    font-family: var(--font-jp);
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--color-gold);
+    opacity: 0.15;
+    margin-bottom: -0.8rem;
+    user-select: none;
 }
 
 .section-title {
     font-family: var(--font-heading);
     color: var(--color-gold);
     font-size: 1.8rem;
-    margin-bottom: 1rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
 }
 
-/* Tabs */
+.jp-subtitle {
+    display: block;
+    font-family: var(--font-jp);
+    font-size: 0.85rem;
+    color: rgba(147, 51, 234, 0.6);
+    margin-top: 0.3rem;
+    letter-spacing: 3px;
+}
+
+/* ===== PHILOSOPHY ===== */
+.philosophy {
+    margin-bottom: 2rem;
+    animation: fadeIn 1.2s ease forwards;
+}
+
+.philosophy-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: center;
+}
+
+.philosophy-text {
+    background: var(--color-surface);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: var(--glass-border);
+    border-left: 3px solid var(--color-gold);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.philosophy-text p {
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: #ccc;
+}
+
+.philosophy-text p:last-child {
+    margin-bottom: 0;
+}
+
+.philosophy-text strong {
+    color: var(--color-gold);
+}
+
+.philosophy-text em {
+    color: var(--color-purple-light);
+    font-style: normal;
+    font-weight: 600;
+}
+
+.philosophy-image {
+    display: flex;
+    justify-content: center;
+}
+
+.toji-side-img {
+    width: 100%;
+    max-width: 350px;
+    border-radius: 10px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    filter: contrast(1.05) brightness(0.95);
+    transition: transform 0.3s ease;
+}
+
+.toji-side-img:hover {
+    transform: scale(1.02);
+}
+
+/* ===== CODIGO DO TOJI ===== */
+.toji-code {
+    margin-bottom: 2rem;
+    animation: fadeIn 1.4s ease forwards;
+}
+
+.code-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+}
+
+.code-item {
+    background: var(--color-surface);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: var(--glass-border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    display: flex;
+    gap: 1.2rem;
+    align-items: flex-start;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.code-item:hover {
+    border-color: rgba(255, 215, 0, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+}
+
+.code-kanji {
+    font-family: var(--font-jp);
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--color-gold);
+    opacity: 0.6;
+    flex-shrink: 0;
+    line-height: 1;
+    text-shadow: var(--gold-glow);
+}
+
+.code-text h4 {
+    font-family: var(--font-heading);
+    color: #fff;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.4rem;
+}
+
+.code-text p {
+    font-size: 0.85rem;
+    color: #999;
+    line-height: 1.5;
+}
+
+/* ===== TRAINING ===== */
 .training-schedule {
     animation: fadeInUp 1.4s ease forwards;
 }
 
 .tabs {
     display: flex;
-    gap: 1rem;
+    gap: 0.8rem;
     margin-bottom: 2rem;
     justify-content: center;
     flex-wrap: wrap;
@@ -130,16 +374,26 @@ body {
 .tab-btn {
     background: rgba(10, 10, 10, 0.8);
     color: var(--color-text);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 0.8rem 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.8rem 1.3rem;
     font-family: var(--font-heading);
-    font-size: 1.1rem;
+    font-size: 1rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 6px;
     transition: all 0.3s ease;
     outline: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.tab-kanji {
+    font-family: var(--font-jp);
+    font-size: 1.2rem;
+    font-weight: 900;
+    opacity: 0.5;
 }
 
 .tab-btn:hover {
@@ -154,6 +408,11 @@ body {
     border-color: var(--color-purple-light);
     box-shadow: var(--purple-glow);
     font-weight: 600;
+}
+
+.tab-btn.active .tab-kanji {
+    opacity: 1;
+    color: var(--color-gold);
 }
 
 /* Tab Content */
@@ -180,10 +439,21 @@ body {
 .workout-title {
     font-family: var(--font-heading);
     color: var(--color-purple-light);
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     margin-bottom: 1.5rem;
-    border-bottom: 1px solid rgba(147, 51, 234, 0.3);
-    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(147, 51, 234, 0.2);
+    padding-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.workout-kanji {
+    font-family: var(--font-jp);
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--color-gold);
+    opacity: 0.4;
 }
 
 /* Exercise List */
@@ -192,17 +462,18 @@ body {
 }
 
 .exercise-item {
-    margin-bottom: 1.2rem;
+    margin-bottom: 1rem;
     padding: 1rem;
     background: rgba(0, 0, 0, 0.4);
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.04);
     transition: all 0.3s ease;
 }
 
 .exercise-item:hover {
-    border-color: rgba(255, 215, 0, 0.3); /* Gold hover effect */
-    transform: translateX(5px);
+    border-color: rgba(255, 215, 0, 0.2);
+    transform: translateX(4px);
+    background: rgba(0, 0, 0, 0.5);
 }
 
 /* Custom Checkbox */
@@ -225,17 +496,18 @@ body {
 
 .checkmark {
     position: relative;
-    height: 24px;
-    width: 24px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 215, 0, 0.5); /* Gold border */
+    height: 22px;
+    width: 22px;
+    min-width: 22px;
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 215, 0, 0.4);
     border-radius: 4px;
     transition: all 0.2s ease;
 }
 
 .custom-checkbox:hover input ~ .checkmark {
-    background-color: rgba(255, 215, 0, 0.1);
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+    background-color: rgba(255, 215, 0, 0.08);
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
 }
 
 .custom-checkbox input:checked ~ .checkmark {
@@ -248,8 +520,8 @@ body {
     content: "";
     position: absolute;
     display: none;
-    left: 8px;
-    top: 4px;
+    left: 7px;
+    top: 3px;
     width: 5px;
     height: 10px;
     border: solid white;
@@ -269,46 +541,61 @@ body {
 
 .exercise-name {
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     color: #fff;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .exercise-reps {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--color-gold);
-    margin-top: 0.2rem;
+    margin-top: 0.15rem;
     font-family: var(--font-heading);
     letter-spacing: 0.5px;
+    opacity: 0.8;
 }
 
 .custom-checkbox input:checked ~ .exercise-info .exercise-name {
-    color: #888;
+    color: #666;
     text-decoration: line-through;
 }
 
-/* Progress Bar */
-.progress-section {
-    margin-top: 3rem;
-    background: var(--color-surface);
-    padding: 1.5rem;
-    border-radius: 8px;
-    border: var(--glass-border);
-    text-align: center;
+.custom-checkbox input:checked ~ .exercise-info .exercise-reps {
+    opacity: 0.4;
 }
 
-.progress-section p {
+/* ===== PROGRESS ===== */
+.progress-section {
+    margin-top: 2.5rem;
+    background: var(--color-surface);
+    padding: 1.5rem;
+    border-radius: 10px;
+    border: var(--glass-border);
+}
+
+.progress-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
     font-family: var(--font-heading);
-    font-size: 1.2rem;
-    margin-bottom: 1rem;
+    font-size: 1.1rem;
     color: var(--color-gold);
+    margin-bottom: 1rem;
+}
+
+.progress-kanji {
+    font-family: var(--font-jp);
+    font-size: 1.5rem;
+    font-weight: 900;
+    opacity: 0.4;
 }
 
 .progress-bar-bg {
     width: 100%;
-    height: 10px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
+    height: 8px;
+    background-color: rgba(255, 255, 255, 0.06);
+    border-radius: 4px;
     overflow: hidden;
 }
 
@@ -318,9 +605,81 @@ body {
     width: 0%;
     transition: width 0.4s ease-out;
     box-shadow: var(--purple-glow);
+    border-radius: 4px;
 }
 
-/* Animations */
+/* ===== GALLERY ===== */
+.toji-gallery {
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+}
+
+.gallery-item {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(147, 51, 234, 0.15);
+    transition: all 0.4s ease;
+}
+
+.gallery-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 40px rgba(107, 33, 168, 0.3);
+    border-color: rgba(255, 215, 0, 0.3);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    display: block;
+    filter: contrast(1.05) saturate(1.05);
+    transition: transform 0.4s ease;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.05);
+}
+
+/* ===== FOOTER ===== */
+.site-footer {
+    text-align: center;
+    padding: 3rem 0 2rem;
+    margin-top: 2rem;
+}
+
+.footer-kanji {
+    font-family: var(--font-jp);
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: rgba(255, 215, 0, 0.08);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.5rem;
+}
+
+.footer-text {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.footer-jp {
+    font-family: var(--font-jp);
+    font-size: 0.8rem;
+    color: rgba(147, 51, 234, 0.4);
+    margin-top: 0.5rem;
+    letter-spacing: 2px;
+}
+
+/* ===== ANIMATIONS ===== */
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -336,17 +695,67 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive */
+/* ===== SCROLL ANIMATIONS ===== */
+.scroll-animate {
+    opacity: 0;
+    transform: translateY(25px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.scroll-animate.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
     .title {
-        font-size: 2.5rem;
+        font-size: 2.2rem;
+        letter-spacing: 2px;
     }
-    
+
+    .hero-kanji {
+        font-size: 3rem;
+    }
+
     .container {
         padding: 1rem;
     }
-    
+
     .tabs {
         flex-direction: column;
+    }
+
+    .philosophy-content {
+        grid-template-columns: 1fr;
+    }
+
+    .philosophy-image {
+        order: -1;
+    }
+
+    .code-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .gallery-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .gallery-item img {
+        height: 200px;
+    }
+
+    .toji-hero-img {
+        max-width: 280px;
+    }
+
+    .kanji-float {
+        display: none;
+    }
+
+    .tab-btn {
+        width: 100%;
+        justify-content: center;
     }
 }

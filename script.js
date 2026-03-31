@@ -12,25 +12,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressText = document.getElementById('progress-text');
     const progressBar = document.getElementById('progress-bar');
 
-    // Tab Switching Logic
+    // Tab Switching
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
-            // Remove active class from all
             tabBtns.forEach(b => b.classList.remove('active'));
             tabContents.forEach(c => c.classList.remove('active'));
 
-            // Add active class to clicked
             btn.classList.add('active');
             const targetId = btn.getAttribute('data-target');
             document.getElementById(targetId).classList.add('active');
 
-            // Recalculate progress for the active tab (optional: or we can keep global progress)
-            // Let's keep it global for the whole protocol
             updateProgress();
         });
     });
 
-    // Progress Logic
+    // Progress
     function updateProgress() {
         const totalChecked = Array.from(checkboxes).filter(cb => cb.checked).length;
         const totalCheckboxes = checkboxes.length;
@@ -40,18 +36,15 @@ document.addEventListener('DOMContentLoaded', () => {
             percentage = Math.round((totalChecked / totalCheckboxes) * 100);
         }
 
-        progressText.textContent = `${percentage}% Concluído`;
+        progressText.textContent = `${percentage}%`;
         progressBar.style.width = `${percentage}%`;
 
-        // Add a glow effect when reaching 100%
         if (percentage === 100) {
             progressBar.style.boxShadow = '0 0 20px rgba(255, 215, 0, 1), 0 0 40px rgba(107, 33, 168, 0.8)';
-            progressText.style.color = 'var(--color-gold)';
             progressText.style.textShadow = 'var(--gold-glow)';
-            progressText.textContent = 'RESTRIÇÃO CELESTIAL ALCANÇADA';
+            progressText.textContent = '天与呪縛 達成';
         } else {
             progressBar.style.boxShadow = 'var(--purple-glow)';
-            progressText.style.color = 'var(--color-gold)';
             progressText.style.textShadow = 'none';
         }
     }
@@ -60,6 +53,25 @@ document.addEventListener('DOMContentLoaded', () => {
         cb.addEventListener('change', updateProgress);
     });
 
-    // Initial update
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.philosophy, .toji-code, .toji-gallery, .code-item, .gallery-item').forEach(el => {
+        el.classList.add('scroll-animate');
+        observer.observe(el);
+    });
+
     updateProgress();
 });

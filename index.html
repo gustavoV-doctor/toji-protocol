@@ -11,38 +11,128 @@
     <meta name="apple-mobile-web-app-title" content="Toji Protocol">
     <link rel="apple-touch-icon" href="assets/icon_512.png">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Oswald:wght@500;700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Oswald:wght@500;700&family=Noto+Serif+JP:wght@400;700;900&display=swap"
         rel="stylesheet">
 </head>
 
 <body>
     <div class="background-overlay"></div>
 
+    <!-- Kanji floating elements -->
+    <div class="kanji-float kanji-1">殺</div>
+    <div class="kanji-float kanji-2">力</div>
+    <div class="kanji-float kanji-3">鬼</div>
+    <div class="kanji-float kanji-4">武</div>
+
     <main class="container">
+
+        <!-- HERO -->
         <header class="hero">
+            <div class="hero-kanji">天与呪縛</div>
             <div class="hero-content">
                 <h1 class="title">PROTOCOLO <span class="highlight-gold">RESTRIÇÃO</span> <span
                         class="highlight-purple">CELESTIAL</span></h1>
-                <p class="subtitle">Esmague a feitiçaria com puro poder físico e tática brutal. Torne-se a anomalia.</p>
+                <p class="subtitle-jp">呪力ゼロ。肉体のみで最強を超えろ。</p>
+                <p class="subtitle">Zero energia amaldicoada. Supere o mais forte apenas com o corpo.</p>
+            </div>
+            <div class="hero-image">
+                <img src="https://wallpapercave.com/wp/wp8913051.png" alt="Toji Fushiguro" class="toji-hero-img">
             </div>
         </header>
 
+        <!-- BRUSH DIVIDER -->
+        <div class="brush-divider"></div>
+
+        <!-- PHILOSOPHY -->
         <section class="philosophy">
-            <h2 class="section-title">A Mente de um Assassino</h2>
-            <p>O treinamento de Toji Fushiguro não é sobre ego; é sobre eficiência letal. Mobilidade absurda, força
-                bruta sem paralelos e instintos aguçados. O corpo é sua única e definitiva arma.</p>
+            <div class="section-header">
+                <span class="kanji-label">心</span>
+                <h2 class="section-title">A Filosofia do Assassino</h2>
+                <span class="jp-subtitle">殺し屋の哲学</span>
+            </div>
+            <div class="philosophy-content">
+                <div class="philosophy-text">
+                    <p>Toji Fushiguro nasceu com a <strong>Restrição Celestial</strong> &mdash; zero de energia amaldicoada em troca de um corpo fisicamente perfeito. Onde outros dependem de jujutsu, ele depende apenas de <em>carne, osso e instinto</em>.</p>
+                    <p>Este protocolo existe para forjar esse mesmo tipo de corpo: denso, funcional, brutalmente eficiente. Sem atalhos. Sem truques. Apenas o trabalho.</p>
+                </div>
+                <div class="philosophy-image">
+                    <img src="https://wallpapercave.com/wp/wp8839918.jpg" alt="Toji Fushiguro" class="toji-side-img">
+                </div>
+            </div>
         </section>
 
+        <!-- CÓDIGO DO TOJI -->
+        <section class="toji-code">
+            <div class="section-header">
+                <span class="kanji-label">掟</span>
+                <h2 class="section-title">Código do Toji</h2>
+                <span class="jp-subtitle">禪院甚爾の掟</span>
+            </div>
+            <div class="code-grid">
+                <div class="code-item">
+                    <span class="code-kanji">壱</span>
+                    <div class="code-text">
+                        <h4>Sem desculpas</h4>
+                        <p>A dor e o cansaco sao apenas sinais de que o corpo esta se adaptando. Ignore-os.</p>
+                    </div>
+                </div>
+                <div class="code-item">
+                    <span class="code-kanji">弐</span>
+                    <div class="code-text">
+                        <h4>Consistencia mata talento</h4>
+                        <p>Toji nao nasceu forte &mdash; ele foi moldado pela repeticao implacavel, dia apos dia.</p>
+                    </div>
+                </div>
+                <div class="code-item">
+                    <span class="code-kanji">参</span>
+                    <div class="code-text">
+                        <h4>O corpo e a unica arma</h4>
+                        <p>Sem suplementos magicos, sem atalhos. Comida limpa, sono pesado, treino brutal.</p>
+                    </div>
+                </div>
+                <div class="code-item">
+                    <span class="code-kanji">肆</span>
+                    <div class="code-text">
+                        <h4>Caca ou seja cacado</h4>
+                        <p>Cada treino e uma missao. Entre na academia como se estivesse entrando em combate.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BRUSH DIVIDER -->
+        <div class="brush-divider"></div>
+
+        <!-- TRAINING -->
         <section class="training-schedule">
-            <div class="tabs">
-                <button class="tab-btn active" data-target="day1">Costas e Bíceps (Puxada)</button>
-                <button class="tab-btn" data-target="day2">Peito e Tríceps (Impacto)</button>
-                <button class="tab-btn" data-target="day3">Ombros e Core (Armadura)</button>
+            <div class="section-header">
+                <span class="kanji-label">鍛</span>
+                <h2 class="section-title">Protocolo de Treino</h2>
+                <span class="jp-subtitle">鍛錬プロトコル</span>
             </div>
 
+            <div class="tabs">
+                <button class="tab-btn active" data-target="day1">
+                    <span class="tab-kanji">引</span>
+                    Costas e Biceps
+                </button>
+                <button class="tab-btn" data-target="day2">
+                    <span class="tab-kanji">押</span>
+                    Peito e Triceps
+                </button>
+                <button class="tab-btn" data-target="day3">
+                    <span class="tab-kanji">甲</span>
+                    Ombros e Core
+                </button>
+            </div>
+
+            <!-- DAY 1 -->
             <div class="tab-content active" id="day1">
                 <div class="workout-card">
-                    <h3 class="workout-title">Costas de Observador (Back & Biceps)</h3>
+                    <h3 class="workout-title">
+                        <span class="workout-kanji">背</span>
+                        Costas de Predador
+                    </h3>
                     <ul class="exercise-list">
                         <li class="exercise-item">
                             <label class="custom-checkbox">
@@ -50,7 +140,7 @@
                                 <span class="checkmark"></span>
                                 <div class="exercise-info">
                                     <span class="exercise-name">Barra Fixa (Pull-ups) com Peso</span>
-                                    <span class="exercise-reps">4x8 - Carga Adicional (Foco na dorsal)</span>
+                                    <span class="exercise-reps">4x8 &mdash; Carga adicional, foco na dorsal</span>
                                 </div>
                             </label>
                         </li>
@@ -60,7 +150,7 @@
                                 <span class="checkmark"></span>
                                 <div class="exercise-info">
                                     <span class="exercise-name">Remada Curvada com Barra</span>
-                                    <span class="exercise-reps">4x8 a 10 - Puxada agressiva</span>
+                                    <span class="exercise-reps">4x8-10 &mdash; Puxada agressiva</span>
                                 </div>
                             </label>
                         </li>
@@ -70,7 +160,7 @@
                                 <span class="checkmark"></span>
                                 <div class="exercise-info">
                                     <span class="exercise-name">Remada Unilateral (Serrote)</span>
-                                    <span class="exercise-reps">3x10 cada lado - Máximo de amplitude</span>
+                                    <span class="exercise-reps">3x10 cada lado &mdash; Maxima amplitude</span>
                                 </div>
                             </label>
                         </li>
@@ -80,7 +170,7 @@
                                 <span class="checkmark"></span>
                                 <div class="exercise-info">
                                     <span class="exercise-name">Rosca Direta com Barra W</span>
-                                    <span class="exercise-reps">4x10 - Controle na descida</span>
+                                    <span class="exercise-reps">4x10 &mdash; Controle na descida</span>
                                 </div>
                             </label>
                         </li>
@@ -90,7 +180,7 @@
                                 <span class="checkmark"></span>
                                 <div class="exercise-info">
                                     <span class="exercise-name">Rosca Martelo com Halteres</span>
-                                    <span class="exercise-reps">3x12 - Força bruta no antebraço</span>
+                                    <span class="exercise-reps">3x12 &mdash; Forca bruta no antebraco</span>
                                 </div>
                             </label>
                         </li>
@@ -98,9 +188,13 @@
                 </div>
             </div>
 
+            <!-- DAY 2 -->
             <div class="tab-content" id="day2">
                 <div class="workout-card">
-                    <h3 class="workout-title">Força de Impacto (Chest & Triceps)</h3>
+                    <h3 class="workout-title">
+                        <span class="workout-kanji">胸</span>
+                        Forca de Impacto
+                    </h3>
                     <ul class="exercise-list">
                         <li class="exercise-item">
                             <label class="custom-checkbox">
@@ -108,7 +202,7 @@
                                 <span class="checkmark"></span>
                                 <div class="exercise-info">
                                     <span class="exercise-name">Supino Inclinado com Halteres</span>
-                                    <span class="exercise-reps">4x8 a 10 - Foco superior</span>
+                                    <span class="exercise-reps">4x8-10 &mdash; Foco superior</span>
                                 </div>
                             </label>
                         </li>
@@ -118,7 +212,7 @@
                                 <span class="checkmark"></span>
                                 <div class="exercise-info">
                                     <span class="exercise-name">Supino Reto com Barra</span>
-                                    <span class="exercise-reps">4x8 - Carga pesada</span>
+                                    <span class="exercise-reps">4x8 &mdash; Carga pesada</span>
                                 </div>
                             </label>
                         </li>
@@ -128,7 +222,7 @@
                                 <span class="checkmark"></span>
                                 <div class="exercise-info">
                                     <span class="exercise-name">Crucifixo na Polia (Crossover)</span>
-                                    <span class="exercise-reps">3x12 - Contração máxima</span>
+                                    <span class="exercise-reps">3x12 &mdash; Contracao maxima</span>
                                 </div>
                             </label>
                         </li>
@@ -137,8 +231,8 @@
                                 <input type="checkbox">
                                 <span class="checkmark"></span>
                                 <div class="exercise-info">
-                                    <span class="exercise-name">Tríceps Testa com Barra W</span>
-                                    <span class="exercise-reps">4x10 - Isolando a cabeça longa</span>
+                                    <span class="exercise-name">Triceps Testa com Barra W</span>
+                                    <span class="exercise-reps">4x10 &mdash; Isolando a cabeca longa</span>
                                 </div>
                             </label>
                         </li>
@@ -147,8 +241,8 @@
                                 <input type="checkbox">
                                 <span class="checkmark"></span>
                                 <div class="exercise-info">
-                                    <span class="exercise-name">Tríceps Pulley (Corda)</span>
-                                    <span class="exercise-reps">3x12 a 15 - Queimação final</span>
+                                    <span class="exercise-name">Triceps Pulley (Corda)</span>
+                                    <span class="exercise-reps">3x12-15 &mdash; Queimacao final</span>
                                 </div>
                             </label>
                         </li>
@@ -156,9 +250,13 @@
                 </div>
             </div>
 
+            <!-- DAY 3 -->
             <div class="tab-content" id="day3">
                 <div class="workout-card">
-                    <h3 class="workout-title">Armadura Celestial (Shoulders & Core)</h3>
+                    <h3 class="workout-title">
+                        <span class="workout-kanji">肩</span>
+                        Armadura Celestial
+                    </h3>
                     <ul class="exercise-list">
                         <li class="exercise-item">
                             <label class="custom-checkbox">
@@ -166,7 +264,7 @@
                                 <span class="checkmark"></span>
                                 <div class="exercise-info">
                                     <span class="exercise-name">Desenvolvimento com Halteres</span>
-                                    <span class="exercise-reps">4x8 a 10 - Ombros largos e densos</span>
+                                    <span class="exercise-reps">4x8-10 &mdash; Ombros largos e densos</span>
                                 </div>
                             </label>
                         </li>
@@ -175,8 +273,8 @@
                                 <input type="checkbox">
                                 <span class="checkmark"></span>
                                 <div class="exercise-info">
-                                    <span class="exercise-name">Elevação Lateral na Polia ou Halter</span>
-                                    <span class="exercise-reps">4x12 a 15 - Foco no volume lateral</span>
+                                    <span class="exercise-name">Elevacao Lateral na Polia ou Halter</span>
+                                    <span class="exercise-reps">4x12-15 &mdash; Volume lateral</span>
                                 </div>
                             </label>
                         </li>
@@ -186,7 +284,7 @@
                                 <span class="checkmark"></span>
                                 <div class="exercise-info">
                                     <span class="exercise-name">Face Pull</span>
-                                    <span class="exercise-reps">3x15 - Postura e deltóide posterior</span>
+                                    <span class="exercise-reps">3x15 &mdash; Postura e deltoide posterior</span>
                                 </div>
                             </label>
                         </li>
@@ -196,7 +294,7 @@
                                 <span class="checkmark"></span>
                                 <div class="exercise-info">
                                     <span class="exercise-name">Abdominal na Barra (Toes to Bar)</span>
-                                    <span class="exercise-reps">4x12 - Core de pedra</span>
+                                    <span class="exercise-reps">4x12 &mdash; Core de pedra</span>
                                 </div>
                             </label>
                         </li>
@@ -206,7 +304,7 @@
                                 <span class="checkmark"></span>
                                 <div class="exercise-info">
                                     <span class="exercise-name">Prancha com Peso (Weighted Plank)</span>
-                                    <span class="exercise-reps">3x 1 minuto (Máximo que puder)</span>
+                                    <span class="exercise-reps">3x1 min &mdash; Maximo que puder</span>
                                 </div>
                             </label>
                         </li>
@@ -214,13 +312,44 @@
                 </div>
             </div>
 
+            <!-- PROGRESS -->
             <div class="progress-section">
-                <p>Progresso do Módulo: <span id="progress-text">0%</span></p>
+                <div class="progress-label">
+                    <span class="progress-kanji">進</span>
+                    <span>Progresso do Modulo: <strong id="progress-text">0%</strong></span>
+                </div>
                 <div class="progress-bar-bg">
                     <div class="progress-bar-fill" id="progress-bar"></div>
                 </div>
             </div>
         </section>
+
+        <!-- BRUSH DIVIDER -->
+        <div class="brush-divider"></div>
+
+        <!-- TOJI GALLERY -->
+        <section class="toji-gallery">
+            <div class="section-header">
+                <span class="kanji-label">姿</span>
+                <h2 class="section-title">O Shape a Ser Alcancado</h2>
+                <span class="jp-subtitle">目指すべき肉体</span>
+            </div>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="https://wallpapercave.com/wp/wp8913058.jpg" alt="Toji Fushiguro" loading="lazy">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://wallpapercave.com/wp/wp8839918.jpg" alt="Toji Fushiguro" loading="lazy">
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="site-footer">
+            <div class="footer-kanji">禪院甚爾</div>
+            <p class="footer-text">Protocolo Restricao Celestial &mdash; Forjado para quem recusa ser fraco.</p>
+            <p class="footer-jp">弱さを拒む者のために鍛えられた。</p>
+        </footer>
     </main>
 
     <script src="script.js"></script>
