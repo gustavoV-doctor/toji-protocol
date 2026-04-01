@@ -1,4 +1,4 @@
-const CACHE_NAME = 'toji-protocol-v5';
+const CACHE_NAME = 'toji-protocol-v6';
 const BASE_PATH = self.registration.scope;
 const ASSETS_TO_CACHE = [
     './',

@@ -11,628 +11,154 @@
     <meta name="apple-mobile-web-app-title" content="Toji Protocol">
     <link rel="apple-touch-icon" href="assets/icon_512.png">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Oswald:wght@500;700&family=Noto+Serif+JP:wght@400;700;900&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Oswald:wght@500;700&family=Noto+Serif+JP:wght@400;700;900&display=swap"
         rel="stylesheet">
 </head>
 
 <body>
     <div class="background-overlay"></div>
-
-    <!-- Kanji floating elements -->
     <div class="kanji-float kanji-1">殺</div>
     <div class="kanji-float kanji-2">力</div>
-    <div class="kanji-float kanji-3">鬼</div>
-    <div class="kanji-float kanji-4">武</div>
 
     <main class="container">
 
-        <!-- HERO -->
-        <header class="hero">
-            <div class="hero-kanji">天与呪縛</div>
-            <div class="hero-content">
-                <h1 class="title">PROTOCOLO <span class="highlight-gold">RESTRIÇÃO</span> <span
-                        class="highlight-purple">CELESTIAL</span></h1>
-                <p class="subtitle-jp">呪力ゼロ。肉体のみで最強を超えろ。</p>
-                <p class="subtitle">Zero energia amaldiçoada. Supere o mais forte apenas com o corpo.</p>
+        <!-- TODAY'S MISSION HEADER -->
+        <header class="today-header">
+            <div class="today-top">
+                <span class="today-kanji" id="today-kanji">鍛</span>
+                <div class="today-info">
+                    <p class="today-date" id="today-date"></p>
+                    <h1 class="today-title" id="today-title">CARREGANDO...</h1>
+                    <p class="today-type" id="today-type"></p>
+                </div>
             </div>
-            <div class="hero-image">
-                <img src="https://wallpapercave.com/wp/wp8913051.png" alt="Toji Fushiguro" class="toji-hero-img">
-            </div>
-            <div class="split-badge">
-                <span class="badge-label">PUSH / PULL / LEGS</span>
-                <span class="badge-freq">6x por semana &mdash; cada músculo 2x</span>
+            <div class="streak-bar">
+                <div class="streak-item">
+                    <span class="streak-icon">🔥</span>
+                    <span class="streak-value" id="streak-count">0</span>
+                    <span class="streak-label">dias seguidos</span>
+                </div>
+                <div class="streak-item">
+                    <span class="streak-icon">⚡</span>
+                    <span class="streak-value" id="total-workouts">0</span>
+                    <span class="streak-label">treinos totais</span>
+                </div>
             </div>
         </header>
 
-        <!-- BRUSH DIVIDER -->
-        <div class="brush-divider"></div>
-
-        <!-- PHILOSOPHY -->
-        <section class="philosophy">
-            <div class="section-header">
-                <span class="kanji-label">心</span>
-                <h2 class="section-title">A Filosofia do Assassino</h2>
-                <span class="jp-subtitle">殺し屋の哲学</span>
-            </div>
-            <div class="philosophy-content">
-                <div class="philosophy-text">
-                    <p>Toji Fushiguro nasceu com a <strong>Restrição Celestial</strong> &mdash; zero de energia amaldiçoada em troca de um corpo fisicamente perfeito. Onde outros dependem de jujutsu, ele depende apenas de <em>carne, osso e instinto</em>.</p>
-                    <p>Este protocolo existe para forjar esse mesmo tipo de corpo: denso, proporcional, brutalmente funcional. Sem atalhos. Sem truques. Apenas o trabalho.</p>
-                </div>
-                <div class="philosophy-image">
-                    <img src="https://wallpapercave.com/wp/wp8839918.jpg" alt="Toji Fushiguro" class="toji-side-img">
-                </div>
+        <!-- DAILY MOTIVATION -->
+        <section class="motivation-card" id="motivation-card">
+            <div class="motivation-inner">
+                <span class="motivation-kanji">心</span>
+                <p class="motivation-text" id="motivation-text"></p>
+                <p class="motivation-jp" id="motivation-jp"></p>
             </div>
         </section>
 
-        <!-- CÓDIGO DO TOJI -->
-        <section class="toji-code">
-            <div class="section-header">
-                <span class="kanji-label">掟</span>
-                <h2 class="section-title">Código do Toji</h2>
-                <span class="jp-subtitle">禪院甚爾の掟</span>
+        <!-- PROGRESS FEEDBACK -->
+        <div class="progress-feedback" id="progress-feedback">
+            <div class="progress-section-top">
+                <div class="progress-circle" id="progress-circle">
+                    <svg viewBox="0 0 100 100">
+                        <circle class="progress-bg-circle" cx="50" cy="50" r="45"></circle>
+                        <circle class="progress-fill-circle" id="progress-fill-circle" cx="50" cy="50" r="45"></circle>
+                    </svg>
+                    <span class="progress-percent" id="progress-percent">0%</span>
+                </div>
+                <div class="progress-message">
+                    <p class="progress-status" id="progress-status">Hora de começar, assassino.</p>
+                    <p class="progress-sub" id="progress-sub">Marque os exercícios conforme fizer.</p>
+                </div>
             </div>
-            <div class="code-grid">
-                <div class="code-item">
-                    <span class="code-kanji">壱</span>
-                    <div class="code-text">
-                        <h4>Sem desculpas</h4>
-                        <p>A dor é sinal de adaptação. Ignore-a e continue.</p>
+        </div>
+
+        <!-- WORKOUT CARD (TODAY) -->
+        <section class="workout-today" id="workout-today">
+            <!-- Populated by JS -->
+        </section>
+
+        <!-- COMPLETE BUTTON -->
+        <div class="complete-section" id="complete-section" style="display:none;">
+            <button class="complete-btn" id="complete-btn">
+                <span class="complete-kanji">完</span>
+                MISSÃO CONCLUÍDA
+            </button>
+        </div>
+
+        <!-- COMPLETION CELEBRATION -->
+        <div class="celebration" id="celebration" style="display:none;">
+            <div class="celebration-content">
+                <div class="celebration-kanji">天与呪縛</div>
+                <h2 class="celebration-title">RESTRIÇÃO CELESTIAL ALCANÇADA</h2>
+                <p class="celebration-text" id="celebration-text"></p>
+                <div class="celebration-stats">
+                    <div class="cel-stat">
+                        <span class="cel-value" id="cel-streak">0</span>
+                        <span class="cel-label">Streak</span>
+                    </div>
+                    <div class="cel-stat">
+                        <span class="cel-value" id="cel-total">0</span>
+                        <span class="cel-label">Treinos</span>
+                    </div>
+                    <div class="cel-stat">
+                        <span class="cel-value" id="cel-exercises">0</span>
+                        <span class="cel-label">Exercícios hoje</span>
                     </div>
                 </div>
-                <div class="code-item">
-                    <span class="code-kanji">弐</span>
-                    <div class="code-text">
-                        <h4>Consistência mata talento</h4>
-                        <p>Toji foi moldado pela repetição implacável, dia após dia.</p>
-                    </div>
-                </div>
-                <div class="code-item">
-                    <span class="code-kanji">参</span>
-                    <div class="code-text">
-                        <h4>O corpo é a única arma</h4>
-                        <p>Comida limpa, sono pesado, treino brutal. Sem atalhos.</p>
-                    </div>
-                </div>
-                <div class="code-item">
-                    <span class="code-kanji">肆</span>
-                    <div class="code-text">
-                        <h4>Cace ou seja caçado</h4>
-                        <p>Cada treino é uma missão. Entre como se fosse combate.</p>
-                    </div>
-                </div>
+            </div>
+        </div>
+
+        <!-- REST DAY -->
+        <section class="rest-day" id="rest-day" style="display:none;">
+            <div class="rest-content">
+                <div class="rest-kanji">休</div>
+                <h2 class="rest-title">DIA DE DESCANSO</h2>
+                <p class="rest-text">Até o assassino mais letal precisa recuperar. O músculo cresce no repouso.</p>
+                <p class="rest-jp">休息も鍛錬の一部。</p>
+                <img src="https://wallpapercave.com/wp/wp8839918.jpg" alt="Toji" class="rest-image">
             </div>
         </section>
 
-        <!-- BRUSH DIVIDER -->
-        <div class="brush-divider"></div>
-
-        <!-- TRAINING -->
-        <section class="training-schedule">
-            <div class="section-header">
-                <span class="kanji-label">鍛</span>
-                <h2 class="section-title">Protocolo de Treino</h2>
-                <span class="jp-subtitle">鍛錬プロトコル &mdash; PPL 6日</span>
+        <!-- WEEK OVERVIEW (collapsible) -->
+        <details class="week-details">
+            <summary class="week-summary">
+                <span class="workout-kanji">週</span>
+                Ver semana completa
+            </summary>
+            <div class="week-grid">
+                <div class="week-day" data-day="1"><span class="day-label">SEG</span><span class="day-type pull">Pull A</span></div>
+                <div class="week-day" data-day="2"><span class="day-label">TER</span><span class="day-type push">Push A</span></div>
+                <div class="week-day" data-day="3"><span class="day-label">QUA</span><span class="day-type legs">Legs A</span></div>
+                <div class="week-day" data-day="4"><span class="day-label">QUI</span><span class="day-type pull">Pull B</span></div>
+                <div class="week-day" data-day="5"><span class="day-label">SEX</span><span class="day-type push">Push B</span></div>
+                <div class="week-day" data-day="6"><span class="day-label">SÁB</span><span class="day-type legs">Legs B</span></div>
+                <div class="week-day rest" data-day="0"><span class="day-label">DOM</span><span class="day-type">休 Rest</span></div>
             </div>
+        </details>
 
-            <div class="tabs">
-                <button class="tab-btn active" data-target="day1">
-                    <span class="tab-kanji">引</span>
-                    <span class="tab-label">Pull A</span>
-                </button>
-                <button class="tab-btn" data-target="day2">
-                    <span class="tab-kanji">押</span>
-                    <span class="tab-label">Push A</span>
-                </button>
-                <button class="tab-btn" data-target="day3">
-                    <span class="tab-kanji">脚</span>
-                    <span class="tab-label">Legs A</span>
-                </button>
-                <button class="tab-btn" data-target="day4">
-                    <span class="tab-kanji">引</span>
-                    <span class="tab-label">Pull B</span>
-                </button>
-                <button class="tab-btn" data-target="day5">
-                    <span class="tab-kanji">押</span>
-                    <span class="tab-label">Push B</span>
-                </button>
-                <button class="tab-btn" data-target="day6">
-                    <span class="tab-kanji">脚</span>
-                    <span class="tab-label">Legs B</span>
-                </button>
+        <!-- ALL WORKOUTS (hidden tabs for navigation) -->
+        <details class="all-workouts-details">
+            <summary class="week-summary">
+                <span class="workout-kanji">全</span>
+                Ver todos os treinos
+            </summary>
+            <div class="all-workouts-tabs">
+                <button class="mini-tab active" data-target="all-day1">Pull A</button>
+                <button class="mini-tab" data-target="all-day2">Push A</button>
+                <button class="mini-tab" data-target="all-day3">Legs A</button>
+                <button class="mini-tab" data-target="all-day4">Pull B</button>
+                <button class="mini-tab" data-target="all-day5">Push B</button>
+                <button class="mini-tab" data-target="all-day6">Legs B</button>
             </div>
-
-            <!-- DAY 1 — PULL A (Heavy) -->
-            <div class="tab-content active" id="day1">
-                <div class="workout-card">
-                    <h3 class="workout-title">
-                        <span class="workout-kanji">背</span>
-                        Pull A &mdash; Costas Pesado + Bíceps + Trapézio
-                    </h3>
-                    <p class="workout-desc">Foco em carga pesada e compostos. Construa as costas de predador.</p>
-                    <ul class="exercise-list">
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Barra Fixa com Peso (Pull-up)</span>
-                                    <span class="exercise-reps">4x6-8 &mdash; Carga adicional, pegada pronada</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Remada Curvada com Barra</span>
-                                    <span class="exercise-reps">4x6-8 &mdash; Puxada explosiva, sem embalo</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Remada Cavalinho (T-Bar Row)</span>
-                                    <span class="exercise-reps">3x8-10 &mdash; Espessura no meio das costas</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Encolhimento com Halteres (Shrug)</span>
-                                    <span class="exercise-reps">4x10-12 &mdash; Segura 2s no topo, trapézio grosso</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Rosca Direta com Barra W</span>
-                                    <span class="exercise-reps">3x8-10 &mdash; Controle na excêntrica (3s descendo)</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Rosca Martelo com Halteres</span>
-                                    <span class="exercise-reps">3x10-12 &mdash; Braquial e antebraço</span>
-                                </div>
-                            </label>
-                        </li>
-                    </ul>
-                </div>
+            <div class="all-workouts-content" id="all-workouts-content">
+                <!-- Populated by JS -->
             </div>
-
-            <!-- DAY 2 — PUSH A (Heavy) -->
-            <div class="tab-content" id="day2">
-                <div class="workout-card">
-                    <h3 class="workout-title">
-                        <span class="workout-kanji">胸</span>
-                        Push A &mdash; Peito Pesado + Ombro + Tríceps
-                    </h3>
-                    <p class="workout-desc">Carga máxima nos compostos. Construa a força de impacto.</p>
-                    <ul class="exercise-list">
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Supino Reto com Barra</span>
-                                    <span class="exercise-reps">4x6-8 &mdash; Carga pesada, arco controlado</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Supino Inclinado com Halteres</span>
-                                    <span class="exercise-reps">3x8-10 &mdash; Peitoral superior, amplitude total</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Desenvolvimento com Halteres (sentado)</span>
-                                    <span class="exercise-reps">4x8-10 &mdash; Deltóide anterior e medial</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Elevação Lateral com Halteres</span>
-                                    <span class="exercise-reps">4x12-15 &mdash; Ombro largo, sem embalo</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Tríceps Testa com Barra W</span>
-                                    <span class="exercise-reps">3x8-10 &mdash; Cabeça longa do tríceps</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Tríceps Pulley com Corda</span>
-                                    <span class="exercise-reps">3x12-15 &mdash; Abre no final, contração máxima</span>
-                                </div>
-                            </label>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- DAY 3 — LEGS A (Quad Focus) -->
-            <div class="tab-content" id="day3">
-                <div class="workout-card">
-                    <h3 class="workout-title">
-                        <span class="workout-kanji">脚</span>
-                        Legs A &mdash; Quadríceps + Panturrilha + Core
-                    </h3>
-                    <p class="workout-desc">Pernas que saltam prédios e chutam feiticeiros. Sem pular leg day.</p>
-                    <ul class="exercise-list">
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Agachamento Livre com Barra</span>
-                                    <span class="exercise-reps">4x6-8 &mdash; Profundo, joelho alinhado</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Leg Press 45°</span>
-                                    <span class="exercise-reps">4x10-12 &mdash; Pés médios, amplitude completa</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Cadeira Extensora</span>
-                                    <span class="exercise-reps">3x12-15 &mdash; Segura 2s no topo</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Avanço (Lunge) com Halteres</span>
-                                    <span class="exercise-reps">3x10 cada perna &mdash; Passo longo, joelho quase no chão</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Panturrilha no Leg Press</span>
-                                    <span class="exercise-reps">4x15-20 &mdash; Amplitude total, pausa embaixo</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Abdominal na Barra (Leg Raise)</span>
-                                    <span class="exercise-reps">4x12 &mdash; Core de pedra, controle total</span>
-                                </div>
-                            </label>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- DAY 4 — PULL B (Volume) -->
-            <div class="tab-content" id="day4">
-                <div class="workout-card">
-                    <h3 class="workout-title">
-                        <span class="workout-kanji">背</span>
-                        Pull B &mdash; Costas Volume + Bíceps + Antebraço
-                    </h3>
-                    <p class="workout-desc">Volume e contração. Detalhes que separam o predador da presa.</p>
-                    <ul class="exercise-list">
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Puxada Frontal no Cabo (pegada aberta)</span>
-                                    <span class="exercise-reps">4x10-12 &mdash; Cotovelo pra baixo, squeeze na dorsal</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Remada Unilateral com Halter (Serrote)</span>
-                                    <span class="exercise-reps">3x10-12 cada lado &mdash; Amplitude máxima</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Remada na Polia Baixa (Seated Row)</span>
-                                    <span class="exercise-reps">3x10-12 &mdash; Triângulo, puxa pro abdômen</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Face Pull</span>
-                                    <span class="exercise-reps">3x15 &mdash; Deltóide posterior + postura</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Rosca Inclinada com Halteres</span>
-                                    <span class="exercise-reps">3x10-12 &mdash; Banco 45°, pico de bíceps</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Rosca de Punho (Wrist Curl)</span>
-                                    <span class="exercise-reps">3x15 &mdash; Grip de ferro, segura arma pesada</span>
-                                </div>
-                            </label>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- DAY 5 — PUSH B (Volume + Shoulders) -->
-            <div class="tab-content" id="day5">
-                <div class="workout-card">
-                    <h3 class="workout-title">
-                        <span class="workout-kanji">肩</span>
-                        Push B &mdash; Ombro Foco + Peito Volume + Tríceps
-                    </h3>
-                    <p class="workout-desc">Ombros 3D e peito definido. A armadura celestial completa.</p>
-                    <ul class="exercise-list">
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Desenvolvimento Arnold</span>
-                                    <span class="exercise-reps">4x8-10 &mdash; Rotação completa, 3 cabeças do deltóide</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Elevação Lateral na Polia</span>
-                                    <span class="exercise-reps">4x12-15 &mdash; Tensão contínua, ombro redondo</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Supino Inclinado com Barra</span>
-                                    <span class="exercise-reps">3x8-10 &mdash; Peitoral superior, carga moderada</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Crucifixo na Polia (Crossover)</span>
-                                    <span class="exercise-reps">3x12-15 &mdash; Contração máxima, cruza as mãos</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Mergulho no Paralelo</span>
-                                    <span class="exercise-reps">3x8-12 &mdash; Tronco reto = tríceps, inclinado = peito</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Tríceps Francês com Halter</span>
-                                    <span class="exercise-reps">3x10-12 &mdash; Um halter, ambas as mãos, cabeça longa</span>
-                                </div>
-                            </label>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- DAY 6 — LEGS B (Posterior) -->
-            <div class="tab-content" id="day6">
-                <div class="workout-card">
-                    <h3 class="workout-title">
-                        <span class="workout-kanji">脚</span>
-                        Legs B &mdash; Posterior + Glúteo + Panturrilha + Core
-                    </h3>
-                    <p class="workout-desc">Posterior forte = explosão, velocidade e estabilidade. O alicerce do assassino.</p>
-                    <ul class="exercise-list">
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Stiff (Romeno) com Barra</span>
-                                    <span class="exercise-reps">4x8-10 &mdash; Quadril pra trás, barra rente à perna</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Agachamento Búlgaro</span>
-                                    <span class="exercise-reps">3x10 cada perna &mdash; Pé no banco, desce fundo</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Mesa Flexora</span>
-                                    <span class="exercise-reps">4x10-12 &mdash; Segura 2s na contração</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Cadeira Abdutora</span>
-                                    <span class="exercise-reps">3x12-15 &mdash; Glúteo médio, estabilidade lateral</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Panturrilha em Pé (Smith ou máquina)</span>
-                                    <span class="exercise-reps">4x12-15 &mdash; Sobe devagar, desce controlado</span>
-                                </div>
-                            </label>
-                        </li>
-                        <li class="exercise-item">
-                            <label class="custom-checkbox">
-                                <input type="checkbox">
-                                <span class="checkmark"></span>
-                                <div class="exercise-info">
-                                    <span class="exercise-name">Prancha com Peso (Weighted Plank)</span>
-                                    <span class="exercise-reps">3x1 min &mdash; Anilha nas costas, core blindado</span>
-                                </div>
-                            </label>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- WEEK OVERVIEW -->
-            <div class="week-overview">
-                <h4 class="overview-title">
-                    <span class="workout-kanji">週</span>
-                    Semana Completa
-                </h4>
-                <div class="week-grid">
-                    <div class="week-day"><span class="day-label">SEG</span><span class="day-type pull">Pull A</span></div>
-                    <div class="week-day"><span class="day-label">TER</span><span class="day-type push">Push A</span></div>
-                    <div class="week-day"><span class="day-label">QUA</span><span class="day-type legs">Legs A</span></div>
-                    <div class="week-day"><span class="day-label">QUI</span><span class="day-type pull">Pull B</span></div>
-                    <div class="week-day"><span class="day-label">SEX</span><span class="day-type push">Push B</span></div>
-                    <div class="week-day"><span class="day-label">SÁB</span><span class="day-type legs">Legs B</span></div>
-                    <div class="week-day rest"><span class="day-label">DOM</span><span class="day-type">休 Rest</span></div>
-                </div>
-            </div>
-
-            <!-- PROGRESS -->
-            <div class="progress-section">
-                <div class="progress-label">
-                    <span class="progress-kanji">進</span>
-                    <span>Progresso do Módulo: <strong id="progress-text">0%</strong></span>
-                </div>
-                <div class="progress-bar-bg">
-                    <div class="progress-bar-fill" id="progress-bar"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- BRUSH DIVIDER -->
-        <div class="brush-divider"></div>
-
-        <!-- TOJI GALLERY -->
-        <section class="toji-gallery">
-            <div class="section-header">
-                <span class="kanji-label">姿</span>
-                <h2 class="section-title">O Shape a Ser Alcançado</h2>
-                <span class="jp-subtitle">目指すべき肉体</span>
-            </div>
-            <div class="gallery-grid">
-                <div class="gallery-item">
-                    <img src="https://wallpapercave.com/wp/wp8913058.jpg" alt="Toji Fushiguro" loading="lazy">
-                </div>
-                <div class="gallery-item">
-                    <img src="https://wallpapercave.com/wp/wp8839918.jpg" alt="Toji Fushiguro" loading="lazy">
-                </div>
-            </div>
-        </section>
+        </details>
 
         <!-- FOOTER -->
         <footer class="site-footer">
             <div class="footer-kanji">禪院甚爾</div>
-            <p class="footer-text">Protocolo Restrição Celestial &mdash; Forjado para quem recusa ser fraco.</p>
+            <p class="footer-text">Protocolo Restrição Celestial</p>
             <p class="footer-jp">弱さを拒む者のために鍛えられた。</p>
         </footer>
     </main>
