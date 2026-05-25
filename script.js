@@ -156,6 +156,8 @@ function renderHero(todayConfig) {
         $('#stat-exercises').textContent = '0';
         $('#stat-block').textContent = '—';
         $$('.hero-stats')[0].style.opacity = '0.4';
+        const cta = $('#hero-cta');
+        if (cta) cta.style.display = 'none';
         return;
     }
 
