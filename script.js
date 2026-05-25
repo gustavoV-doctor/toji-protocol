@@ -194,6 +194,7 @@ function renderWorkout(todayConfig) {
     block.exercises.forEach((ex, i) => {
         const li = document.createElement('li');
         li.className = 'ex';
+        li.style.animationDelay = (80 + i * 70) + 'ms';
         li.innerHTML = `
             <span class="ex-num">${pad2(i + 1)}</span>
             <div class="ex-body">
@@ -297,6 +298,91 @@ function renderLibrary() {
 }
 
 // =====================================================
+// ANIMAÇÕES — scroll reveal, parallax, counter
+// =====================================================
+function setupReveals() {
+    const targets = document.querySelectorAll(
+        '.manifesto, .workout, .rest, .week, .library, .target, .bottom'
+    );
+    targets.forEach(el => el.classList.add('reveal'));
+
+    const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                io.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+
+    targets.forEach(el => io.observe(el));
+}
+
+function setupParallax() {
+    const bg = document.querySelector('.hero-bg');
+    if (!bg) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    let ticking = false;
+    function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+            const y = window.scrollY;
+            // Move o fundo do hero ~20% mais devagar que o scroll
+            bg.style.transform = `translate3d(0, ${y * 0.25}px, 0) scale(1.04)`;
+            ticking = false;
+        });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+}
+
+function animateCount(el, target, duration = 1200) {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        el.textContent = target;
+        return;
+    }
+    const startTime = performance.now();
+    function tick(now) {
+        const t = Math.min(1, (now - startTime) / duration);
+        // easeOutCubic
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(target * eased);
+        if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+}
+
+function animateHeroStats() {
+    const stats = document.querySelectorAll('.hero-stats .stat-num');
+    if (!stats.length) return;
+
+    // Coleta alvos numéricos ANTES de zerar
+    const targets = Array.from(stats).map(s => {
+        const n = parseInt(s.textContent.trim(), 10);
+        return isNaN(n) ? null : n;
+    });
+
+    // Se nenhum é numérico (dia de descanso), pula
+    if (targets.every(t => t === null || t === 0)) return;
+
+    // Zera os numéricos imediatamente
+    stats.forEach((s, i) => {
+        if (targets[i] !== null) s.textContent = '0';
+    });
+
+    // Anima após pequeno delay (alinha com hero entrance)
+    setTimeout(() => {
+        stats.forEach((s, i) => {
+            if (targets[i] !== null) {
+                animateCount(s, targets[i], 1100 + i * 120);
+            }
+        });
+    }, 600);
+}
+
+// =====================================================
 // INIT
 // =====================================================
 function init() {
@@ -309,6 +395,11 @@ function init() {
     renderWorkout(todayConfig);
     renderWeek();
     renderLibrary();
+
+    // Anima depois do render
+    setupReveals();
+    setupParallax();
+    animateHeroStats();
 }
 
 document.addEventListener('DOMContentLoaded', init);
