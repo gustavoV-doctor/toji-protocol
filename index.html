@@ -15,6 +15,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="tracker.css">
 </head>
 
 <body>
@@ -32,6 +33,11 @@
     </header>
 
     <main class="shell">
+
+        <!-- Banner de degradação (storage indisponível) -->
+        <div class="storage-banner" id="storage-banner" hidden>
+            Modo sem memória: o registro vale só nesta visita (armazenamento bloqueado neste navegador).
+        </div>
 
         <!-- HERO / MISSÃO DO DIA -->
         <section class="hero">
@@ -99,6 +105,8 @@
                 <!-- Renderizado por JS -->
             </ol>
 
+            <button class="fechar-btn" id="fechar-sessao" hidden>Fechar sessão →</button>
+
             <div class="workout-foot" id="workout-foot" hidden>
                 <p class="foot-text">Sessão fechada. Sem foto, sem post. Continue.</p>
                 <p class="foot-jp">語る前に積み上げろ。</p>
@@ -118,10 +126,38 @@
             <div class="section-head">
                 <span class="eyebrow">A SEMANA</span>
                 <h3 class="section-title">Rotação 週</h3>
+                <div class="week-counter" id="week-counter"></div>
             </div>
             <div class="week-grid" id="week-grid">
                 <!-- Renderizado por JS -->
             </div>
+        </section>
+
+        <!-- PROGRESSÃO -->
+        <section class="progress-sec" id="progress-sec">
+            <div class="section-head">
+                <span class="eyebrow">A PROGRESSÃO</span>
+                <h3 class="section-title">Evolução 進</h3>
+            </div>
+
+            <div class="prog-tools">
+                <select class="prog-select" id="prog-select" aria-label="Escolher exercício"></select>
+            </div>
+
+            <div class="prog-hero">
+                <div>
+                    <span class="prog-hero-label" id="prog-hero-label">1RM ESTIMADO</span>
+                    <div class="prog-hero-num"><span id="prog-hero-num">—</span><span class="unit" id="prog-hero-unit"></span></div>
+                </div>
+                <div class="prog-side">
+                    <div class="prog-var" id="prog-hero-var"></div>
+                    <div class="prog-hero-best" id="prog-hero-best"></div>
+                </div>
+            </div>
+
+            <div class="prog-chart" id="prog-chart"></div>
+
+            <div class="prog-history" id="prog-history"></div>
         </section>
 
         <!-- TODOS OS TREINOS -->
@@ -173,10 +209,12 @@
     <footer class="bottom">
         <div class="bottom-inner">
             <p class="bottom-kanji">禪院甚爾</p>
-            <p class="bottom-en">Protocolo Restrição Celestial · v2</p>
+            <p class="bottom-en">Protocolo Restrição Celestial · v3</p>
             <p class="bottom-jp">弱さを拒む者のために鍛えられた。</p>
         </div>
     </footer>
+
+    <div class="toast" id="toast" hidden></div>
 
     <script src="script.js"></script>
 </body>

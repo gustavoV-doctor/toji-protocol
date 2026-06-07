@@ -1,14 +1,15 @@
-const CACHE_NAME = 'toji-protocol-v6';
+const CACHE_NAME = 'toji-protocol-v7';
 const BASE_PATH = self.registration.scope;
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
     './style.css',
+    './tracker.css',
     './script.js',
     './manifest.json',
     './assets/toji_bg.jpg',
     './assets/icon_512.png',
-    'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Oswald:wght@500;700&family=Noto+Serif+JP:wght@400;700;900&display=swap'
+    'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Serif+JP:wght@400;700;900&display=swap'
 ];
 
 // Install: cache all core assets
@@ -41,7 +42,6 @@ self.addEventListener('fetch', event => {
                 return cachedResponse;
             }
             return fetch(event.request).then(networkResponse => {
-                // Cache any new resources we fetch (like Google Fonts files)
                 if (networkResponse && networkResponse.status === 200) {
                     const responseClone = networkResponse.clone();
                     caches.open(CACHE_NAME).then(cache => {
@@ -50,7 +50,6 @@ self.addEventListener('fetch', event => {
                 }
                 return networkResponse;
             }).catch(() => {
-                // If offline and not in cache, return a fallback for HTML pages
                 if (event.request.destination === 'document') {
                     return caches.match('./index.html');
                 }
