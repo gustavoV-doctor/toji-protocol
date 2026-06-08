@@ -1,4 +1,4 @@
-const CACHE_NAME = 'toji-protocol-v6';
+const CACHE_NAME = 'toji-tracker-v8';
 const BASE_PATH = self.registration.scope;
 const ASSETS_TO_CACHE = [
     './',
@@ -6,9 +6,9 @@ const ASSETS_TO_CACHE = [
     './style.css',
     './script.js',
     './manifest.json',
-    './assets/toji_bg.jpg',
     './assets/icon_512.png',
-    'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Oswald:wght@500;700&family=Noto+Serif+JP:wght@400;700;900&display=swap'
+    './assets/toji_bg.jpg',
+    'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Serif+JP:wght@400;700;900&display=swap'
 ];
 
 // Install: cache all core assets
@@ -33,28 +33,41 @@ self.addEventListener('activate', event => {
     self.clients.claim();
 });
 
-// Fetch: serve from cache first, fallback to network
+// Fetch:
+//  - Arquivos do próprio app (HTML/CSS/JS) → network-first: sempre frescos online,
+//    caem pro cache offline. Evita o app "preso" numa versão antiga após atualizar.
+//  - Terceiros (Google Fonts, com URL versionada) → cache-first: rápido e estável.
 self.addEventListener('fetch', event => {
+    const req = event.request;
+    if (req.method !== 'GET') return;
+
+    const sameOrigin = new URL(req.url).origin === self.location.origin;
+
+    if (sameOrigin) {
+        // network-first
+        event.respondWith(
+            fetch(req).then(res => {
+                if (res && res.status === 200) {
+                    const clone = res.clone();
+                    caches.open(CACHE_NAME).then(c => c.put(req, clone));
+                }
+                return res;
+            }).catch(() =>
+                caches.match(req).then(hit =>
+                    hit || (req.destination === 'document' ? caches.match('./index.html') : undefined))
+            )
+        );
+        return;
+    }
+
+    // cache-first (fonts e afins)
     event.respondWith(
-        caches.match(event.request).then(cachedResponse => {
-            if (cachedResponse) {
-                return cachedResponse;
+        caches.match(req).then(hit => hit || fetch(req).then(res => {
+            if (res && res.status === 200) {
+                const clone = res.clone();
+                caches.open(CACHE_NAME).then(c => c.put(req, clone));
             }
-            return fetch(event.request).then(networkResponse => {
-                // Cache any new resources we fetch (like Google Fonts files)
-                if (networkResponse && networkResponse.status === 200) {
-                    const responseClone = networkResponse.clone();
-                    caches.open(CACHE_NAME).then(cache => {
-                        cache.put(event.request, responseClone);
-                    });
-                }
-                return networkResponse;
-            }).catch(() => {
-                // If offline and not in cache, return a fallback for HTML pages
-                if (event.request.destination === 'document') {
-                    return caches.match('./index.html');
-                }
-            });
-        })
+            return res;
+        }).catch(() => undefined))
     );
 });

@@ -1,405 +1,716 @@
 /* =========================================================
-   PROTOCOLO RESTRIÇÃO CELESTIAL — v2
-   Lógica: rotação semanal + checklist da sessão (sem persistência)
+   PROJETO TOJI — Tracker de recomposição
+   Não é caderninho: é treinador. Diz quando subir a carga.
+   Client-side puro · localStorage versionado · zero dependência
    ========================================================= */
 
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
-}
-
-// =====================================================
-// BLOCOS DE TREINO — adaptados ao equipamento real
-// (Smith, leg horizontal, polias, halteres ≤10kg, esteira)
-// =====================================================
-const BLOCKS = {
-    A: {
-        code: 'A',
-        title: 'SUPERIOR PESADO',
-        subtitle: 'Peito, costas, ombro e braço — carga, densidade e silêncio.',
-        kanji: '鍛',
-        exercises: [
-            { name: 'Supino inclinado no Smith', reps: '4 × 6–8', cue: 'Banco a 30°. Desce devagar (3s), explode na subida. Sem rebote.' },
-            { name: 'Puxada alta com pegada média', reps: '4 × 8–10', cue: 'Puxa até o peito superior, contrai a dorsal 1s. Sem usar tronco.' },
-            { name: 'Desenvolvimento no Smith', reps: '4 × 6–8', cue: 'Banco reto, barra na linha do queixo. Ombro estável, sem arquear.' },
-            { name: 'Remada na polia baixa', reps: '3 × 8–10', cue: 'Triângulo até o abdômen. Cotovelo colado ao corpo.' },
-            { name: 'Elevação lateral (halter 8–10kg)', reps: '4 × 12–15', cue: 'Sobe controlado, cotovelo guia o movimento. Zero embalo.' },
-            { name: 'Bi-set: tríceps polia + rosca polia', reps: '3 × 10–12 cada', cue: 'Sem pausa entre os dois. 60s entre bi-sets.' },
-            { name: 'Esteira — corrida moderada', reps: '8 min', cue: 'Velocidade que te deixa respirando, mas conseguindo falar 3 palavras.' }
-        ]
+/* ---------------------------------------------------------
+   PROGRAMA — fonte da verdade (editável sem tocar no resto)
+--------------------------------------------------------- */
+const PROGRAM = {
+    rotacao: { semanaImpar: ["A", "B", "A"], semanaPar: ["B", "A", "B"] },
+    agenda: {
+        pesados: ["Ter", "Qui", "Sáb"],
+        leves: ["Seg", "Qua", "Sex"],          // cardio Z2 30min + acessório opcional
+        recuperacaoAtiva: ["Dom"]
     },
-    B: {
-        code: 'B',
-        title: 'INFERIOR',
-        subtitle: 'Quadríceps, posterior, glúteo, panturrilha — a base do predador.',
-        kanji: '脚',
-        exercises: [
-            { name: 'Agachamento no Smith', reps: '4 × 6–8', cue: 'Pés à frente da barra. Desce até coxa paralela. Foco em força.' },
-            { name: 'Leg press horizontal', reps: '4 × 10–12', cue: 'Pés médios, amplitude total. Não trava o joelho em cima.' },
-            { name: 'Cadeira flexora', reps: '4 × 10–12', cue: 'Contrai 1s no final. Excêntrica controlada (3s).' },
-            { name: 'Cadeira extensora', reps: '4 × 12–15', cue: 'Pico de contração 2s. Sem balanço.' },
-            { name: 'Afundo com halteres', reps: '3 × 10 cada perna', cue: 'Passo longo, joelho da frente alinhado ao pé.' },
-            { name: 'Panturrilha no Smith em pé', reps: '4 × 15', cue: 'Sobe explosivo, desce em 3s. Amplitude máxima.' },
-            { name: 'Caminhada inclinada', reps: '5 min · 12% incl.', cue: 'Sem segurar nas barras. Passos firmes.' }
-        ]
-    },
-    C: {
-        code: 'C',
-        title: 'SUPERIOR VOLUME',
-        subtitle: 'Hipertrofia e detalhe — abrir costas, peito alto, ombros 3D.',
-        kanji: '形',
-        exercises: [
-            { name: 'Supino reto no Smith', reps: '4 × 8–10', cue: 'Cadência 2-1-2. Foco em sentir o peitoral médio.' },
-            { name: 'Remada unilateral na polia alta', reps: '3 × 10–12 cada', cue: 'Puxa pra trás do quadril. Roda o ombro pra fora no final.' },
-            { name: 'Crucifixo na polia (cruzado)', reps: '3 × 12–15', cue: 'Cabos baixos cruzando à frente. Aperta o peito 1s.' },
-            { name: 'Puxada com pegada média', reps: '3 × 10–12', cue: 'Foco em contrair a dorsal, não em levantar peso.' },
-            { name: 'Bi-set: lateral + posterior de ombro', reps: '3 × 12 cada', cue: 'Halter 5–8kg pra lateral. Inclinado pra posterior.' },
-            { name: 'Rosca direta na polia + tríceps corda', reps: '3 × 10–12 cada', cue: 'Sem balanço. Aperta o tríceps no final, abre a corda.' },
-            { name: 'Abdominal infra no chão', reps: '3 × 15', cue: 'Pernas estendidas, lombar colada. Subida lenta.' }
-        ]
-    },
-    D: {
-        code: 'D',
-        title: 'INFERIOR + CARDIO',
-        subtitle: 'Posterior, glúteo, condicionamento — a sessão que queima.',
-        kanji: '燃',
-        exercises: [
-            { name: 'Stiff (romeno) no Smith', reps: '4 × 8–10', cue: 'Quadril pra trás, barra rente à perna. Sente o posterior.' },
-            { name: 'Leg press — pés altos', reps: '3 × 12', cue: 'Pés no topo da plataforma. Foco em glúteo e posterior.' },
-            { name: 'Flexora — drop-set', reps: '3 × 10 + 8 + 6', cue: 'Faz 10 com carga forte, baixa, mais 8, baixa, mais 6. Sem pausa.' },
-            { name: 'Extensora — drop-set', reps: '3 × 12 + 10 + 8', cue: 'Mesmo esquema. Queima o quadríceps até o fim.' },
-            { name: 'Step-up com halteres', reps: '3 × 10 cada perna', cue: 'Sobe usando o glúteo, não o impulso da perna de baixo.' },
-            { name: 'Abdominal pernas elevadas', reps: '3 × 15', cue: 'Lombar no chão. Sobe contraindo, desce em 3s.' },
-            { name: 'HIIT esteira', reps: '6 × (30s forte / 60s leve)', cue: 'Forte = velocidade que você mal aguenta. Leve = caminhada.' }
-        ]
+    descanso: { composto: "2–3 min", isolado: "60–90 s" },
+    est1RM: "Epley → peso * (1 + reps / 30)",
+    treinos: {
+        A: {
+            titulo: "SUPERIOR", foco: "peito · costas · ombro · braço", exercicios: [
+                { nome: "Supino reto (barra ou halteres)", series: 4, reps: [6, 10], tipo: "composto", musculo: "peito" },
+                { nome: "Remada curvada (barra)", series: 4, reps: [8, 12], tipo: "composto", musculo: "costas" },
+                { nome: "Desenvolvimento militar", series: 3, reps: [8, 12], tipo: "composto", musculo: "ombro" },
+                { nome: "Puxada alta", series: 3, reps: [8, 12], tipo: "composto", musculo: "costas" },
+                { nome: "Elevação lateral", series: 3, reps: [12, 15], tipo: "isolado", musculo: "ombro" },
+                { nome: "Rosca direta", series: 3, reps: [10, 12], tipo: "isolado", musculo: "bíceps" },
+                { nome: "Tríceps corda ou testa", series: 3, reps: [10, 12], tipo: "isolado", musculo: "tríceps" }
+            ]
+        },
+        B: {
+            titulo: "INFERIOR", foco: "perna completa · core", exercicios: [
+                { nome: "Agachamento no Smith", series: 4, reps: [6, 10], tipo: "composto", musculo: "quadríceps" },
+                { nome: "Terra romeno (RDL)", series: 3, reps: [8, 10], tipo: "composto", musculo: "posterior" },
+                { nome: "Leg press", series: 3, reps: [10, 12], tipo: "composto", musculo: "quadríceps" },
+                { nome: "Cadeira flexora", series: 3, reps: [10, 12], tipo: "isolado", musculo: "posterior" },
+                { nome: "Panturrilha em pé", series: 4, reps: [12, 20], tipo: "isolado", musculo: "panturrilha" },
+                { nome: "Prancha", series: 3, reps: null, tipo: "core", musculo: "core", porTempo: true },
+                { nome: "Abdominal infra", series: 3, reps: [12, 15], tipo: "core", musculo: "core" }
+            ]
+        }
     }
 };
 
-// =====================================================
-// ROTAÇÃO SEMANAL — 4 dias úteis + 3 de descanso
-// 0=Dom 1=Seg 2=Ter 3=Qua 4=Qui 5=Sex 6=Sáb
-// =====================================================
-const WEEK = {
-    0: { type: 'rest', label: 'Descanso' },
-    1: { type: 'work', block: 'A' },
-    2: { type: 'rest', label: 'Cardio leve · passos' },
-    3: { type: 'work', block: 'B' },
-    4: { type: 'rest', label: 'Descanso' },
-    5: { type: 'work', block: 'C' },
-    6: { type: 'work', block: 'D' }
-};
+/* ---------------------------------------------------------
+   IDs estáveis por exercício (slug do nome) + índice plano
+--------------------------------------------------------- */
+function slug(s) {
+    return s.toLowerCase()
+        .normalize("NFD").replace(/[̀-ͯ]/g, "")
+        .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+const EXERCISES = {}; // id -> { ...ex, treino, idx }
+["A", "B"].forEach((t) => {
+    PROGRAM.treinos[t].exercicios.forEach((ex, idx) => {
+        ex.id = slug(ex.nome);
+        ex.treino = t;
+        ex.idx = idx;
+        EXERCISES[ex.id] = ex;
+    });
+});
 
-// =====================================================
-// MANIFESTOS DIÁRIOS — frases tom Toji (frias, cirúrgicas)
-// =====================================================
+/* ---------------------------------------------------------
+   FRASES — tom Toji, cirúrgico, sem energia amaldiçoada
+--------------------------------------------------------- */
 const MANIFESTOS = [
-    { pt: 'Sem talento. Só execução.', jp: '才能はいらない。実行だけだ。' },
-    { pt: 'O fraco se justifica. Você treina.', jp: '弱者は言い訳する。お前は鍛える。' },
-    { pt: 'Dor é informação. Continue.', jp: '痛みは情報だ。進め。' },
-    { pt: 'Não negocie com a preguiça. Ela sempre vence.', jp: '怠惰と交渉するな。必ず負ける。' },
-    { pt: 'Eles vão notar. Não pela palavra — pela presença.', jp: '言葉ではなく、存在で示せ。' },
-    { pt: 'Cada repetição é um voto contra quem você era.', jp: '一回ごとに、過去の自分を否定しろ。' },
-    { pt: 'Treine sem testemunha. O resultado fala.', jp: '見せるな。見せつけろ。' },
-    { pt: 'Você não está cansado. Está confortável demais.', jp: '疲れではない。慣れすぎただけだ。' },
-    { pt: 'Restrição celestial não é dom. É preço pago em silêncio.', jp: '天与呪縛は才能ではない。沈黙で払う代償だ。' },
-    { pt: 'O nível em que você se torna inevitável existe. Caminhe até lá.', jp: '不可避になる地点がある。そこまで歩け。' }
+    { pt: "Sem energia amaldiçoada. Só execução.", jp: "呪力はいらない。実行だけだ。" },
+    { pt: "O fraco se justifica. Você sobe a carga.", jp: "弱者は言い訳する。お前は重さを上げる。" },
+    { pt: "Cada repetição é um voto contra quem você era.", jp: "一回ごとに、過去の自分を否定しろ。" },
+    { pt: "Não negocie com a preguiça. Ela sempre vence.", jp: "怠惰と交渉するな。必ず負ける。" },
+    { pt: "O número não mente. Ou subiu, ou não.", jp: "数字は嘘をつかない。" },
+    { pt: "Treine sem testemunha. O resultado fala.", jp: "見せるな。見せつけろ。" },
+    { pt: "Você não está cansado. Está confortável demais.", jp: "疲れではない。慣れすぎただけだ。" },
+    { pt: "Recuperação é o gargalo. Qualidade, não volume-lixo.", jp: "質を積め。量ではない。" }
 ];
 
-// =====================================================
-// HELPERS
-// =====================================================
-const $ = (sel) => document.querySelector(sel);
-const $$ = (sel) => document.querySelectorAll(sel);
+/* =========================================================
+   HELPERS
+========================================================= */
+const $ = (s, ctx = document) => ctx.querySelector(s);
+const $$ = (s, ctx = document) => Array.from(ctx.querySelectorAll(s));
 
-const WEEKDAY_PT = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
-const WEEKDAY_FULL = ['DOMINGO', 'SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO'];
+const WEEKDAY_PT = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SÁB"];
+const WEEKDAY_FULL = ["DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO"];
 
-function pad2(n) { return String(n).padStart(2, '0'); }
+const pad2 = (n) => String(n).padStart(2, "0");
+
+/** Formata número no padrão BR (vírgula decimal, até 1 casa). */
+function fmt(n) {
+    if (n == null || isNaN(n)) return "—";
+    const r = Math.round(n * 10) / 10;
+    return String(r).replace(".", ",");
+}
+
+/** Chave de data local YYYY-MM-DD (sem fuso surpresa). */
+function dateKey(d) {
+    const x = (d instanceof Date) ? d : new Date(d);
+    return `${x.getFullYear()}-${pad2(x.getMonth() + 1)}-${pad2(x.getDate())}`;
+}
+const todayKey = () => dateKey(new Date());
+
+/** Epley. */
+const epley = (carga, reps) => (Number(carga) || 0) * (1 + (Number(reps) || 0) / 30);
+
+/* ----- Calendário / rotação ----- */
+function startOfWeekMonday(date) {
+    const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const dow = d.getDay();                 // 0=Dom … 6=Sáb
+    const diff = dow === 0 ? -6 : 1 - dow;  // recua até a segunda
+    d.setDate(d.getDate() + diff);
+    return d;
+}
+function weekIndex(date) {
+    const epoch = new Date(2024, 0, 1);     // 01/01/2024 caiu numa segunda
+    const mon = startOfWeekMonday(date);
+    return Math.round((mon - epoch) / (7 * 86400000));
+}
+/** Semana ímpar = A·B·A, semana par = B·A·B. */
+const isOddWeek = (date) => weekIndex(date) % 2 === 0;
+const weekRotation = (date) =>
+    isOddWeek(date) ? PROGRAM.rotacao.semanaImpar : PROGRAM.rotacao.semanaPar;
+
+const HEAVY_SLOT = { 2: 0, 4: 1, 6: 2 }; // Ter, Qui, Sáb -> posição na rotação
+
+/** Tipo do dia: 'pesado' | 'leve' | 'recuperacao'. */
+function dayType(date) {
+    const dow = date.getDay();
+    if (dow in HEAVY_SLOT) return "pesado";
+    if (dow === 0) return "recuperacao";
+    return "leve";
+}
+
+/** Treino sugerido hoje (no dia pesado: pela rotação; senão: o próximo pesado). */
+function suggestedTreino(date) {
+    const dow = date.getDay();
+    if (dow in HEAVY_SLOT) return weekRotation(date)[HEAVY_SLOT[dow]];
+    for (let i = 1; i <= 7; i++) {
+        const d = new Date(date);
+        d.setDate(date.getDate() + i);
+        if (d.getDay() in HEAVY_SLOT) return weekRotation(d)[HEAVY_SLOT[d.getDay()]];
+    }
+    return "A";
+}
 
 function pickManifesto() {
-    const day = new Date();
-    const seed = day.getFullYear() * 1000 + (day.getMonth() * 31) + day.getDate();
+    const d = new Date();
+    const seed = d.getFullYear() * 1000 + d.getMonth() * 31 + d.getDate();
     return MANIFESTOS[seed % MANIFESTOS.length];
 }
 
-function missionNumberToday() {
-    // dia do ano
-    const now = new Date();
-    const start = new Date(now.getFullYear(), 0, 0);
-    const diff = now - start;
-    return Math.floor(diff / (1000 * 60 * 60 * 24));
+/* =========================================================
+   PERSISTÊNCIA — interface única sobre o localStorage
+   (trocar por IndexedDB/backend depois sem mexer na UI)
+========================================================= */
+const STORE_KEY = "toji:sessoes:v1";
+const store = {
+    load() {
+        try {
+            const raw = localStorage.getItem(STORE_KEY);
+            const arr = raw ? JSON.parse(raw) : [];
+            return Array.isArray(arr) ? arr : [];
+        } catch (e) {
+            console.warn("Toji: falha ao ler registros, seguindo em memória.", e);
+            return [];
+        }
+    },
+    save(arr) {
+        try {
+            localStorage.setItem(STORE_KEY, JSON.stringify(arr));
+            return true;
+        } catch (e) {
+            console.warn("Toji: falha ao salvar registros.", e);
+            return false;
+        }
+    },
+    clear() {
+        try { localStorage.removeItem(STORE_KEY); } catch (e) { /* noop */ }
+    }
+};
+
+/* Estado em memória (espelha o store). */
+let sessions = store.load();
+
+/** Salva (substituindo a sessão do mesmo dia+treino, se existir). */
+function commitSession(sess) {
+    const k = dateKey(sess.data);
+    const i = sessions.findIndex((s) => dateKey(s.data) === k && s.treino === sess.treino);
+    if (i >= 0) sessions[i] = sess; else sessions.push(sess);
+    sessions.sort((a, b) => a.id - b.id);
+    return store.save(sessions);
 }
 
-// =====================================================
-// RENDER
-// =====================================================
+/* ----- Consultas ----- */
+/** Sessão de hoje para um treino (pra pré-preencher inputs). */
+function todaysSession(treino) {
+    const k = todayKey();
+    return sessions.find((s) => dateKey(s.data) === k && s.treino === treino) || null;
+}
+
+/** Todas as sessões que têm dado para um exercício, mais recentes primeiro. */
+function historyOf(exId) {
+    return sessions
+        .filter((s) => s.series[exId] && s.series[exId].some((x) => x && (x.carga != null || x.reps != null)))
+        .sort((a, b) => a.id - b.id);
+}
+
+/** Última sessão COMPLETA anterior a hoje (referência "último: …"). */
+function lastEntry(exId) {
+    const list = historyOf(exId).slice().reverse(); // mais recente primeiro
+    const k = todayKey();
+    for (const s of list) if (dateKey(s.data) !== k) return s;
+    return null;
+}
+
+/** Métrica do exercício: 'tempo' (porTempo) | 'kg' (tem carga) | 'reps' (peso corporal). */
+function exMetric(ex) {
+    if (ex.porTempo) return "tempo";
+    const any = sessions.some((s) =>
+        s.series[ex.id] && s.series[ex.id].some((x) => x && x.carga != null && x.carga > 0));
+    return any ? "kg" : "reps";
+}
+
+/** Melhor série de um array de séries, conforme a métrica. */
+function bestSet(series, metric) {
+    const valid = (series || []).filter((x) => x && (x.reps != null || x.carga != null));
+    if (!valid.length) return null;
+    if (metric === "kg") return valid.reduce((b, x) => (epley(x.carga, x.reps) > epley(b.carga, b.reps) ? x : b));
+    return valid.reduce((b, x) => ((x.reps || 0) > (b.reps || 0) ? x : b)); // tempo/reps
+}
+
+/** Valor plotado/ comparado conforme métrica. */
+function setValue(set, metric) {
+    if (!set) return 0;
+    if (metric === "kg") return Number(set.carga) || 0;
+    return Number(set.reps) || 0; // segundos ou reps
+}
+
+/** Motor de sobrecarga: bateu o topo da faixa em TODAS as séries na última sessão? */
+function shouldIncreaseLoad(ex) {
+    if (!ex.reps) return false; // por tempo não tem faixa
+    const last = lastEntry(ex.id);
+    if (!last) return false;
+    const sets = (last.series[ex.id] || []).filter((x) => x && x.reps != null);
+    if (sets.length < ex.series) return false; // exige todas as séries registradas
+    const topo = ex.reps[1];
+    return sets.every((x) => x.reps >= topo);
+}
+
+/* =========================================================
+   ESTADO DA UI
+========================================================= */
+const state = {
+    screen: "treino",
+    treino: suggestedTreino(new Date()),
+    progEx: null // id do exercício na tela de progressão
+};
+
+/* =========================================================
+   RENDER — TOPO E NAV
+========================================================= */
 function renderTopbar() {
     const now = new Date();
-    const formatted = `${WEEKDAY_FULL[now.getDay()]} · ${pad2(now.getDate())}.${pad2(now.getMonth() + 1)}.${now.getFullYear()}`;
-    $('#topbar-date').textContent = formatted;
+    $("#topbar-date").textContent =
+        `${WEEKDAY_FULL[now.getDay()]} · ${pad2(now.getDate())}.${pad2(now.getMonth() + 1)}.${now.getFullYear()}`;
 }
 
-function renderManifesto() {
-    const m = pickManifesto();
-    $('#manifesto-text').textContent = m.pt;
-    $('#manifesto-jp').textContent = m.jp;
+function setScreen(name) {
+    state.screen = name;
+    document.body.dataset.screen = name;
+    $$(".screen").forEach((s) => s.classList.toggle("is-active", s.dataset.screen === name));
+    $$(".tab").forEach((t) => t.classList.toggle("is-active", t.dataset.screen === name));
+    if (name === "progresso") renderProgresso();
+    if (name === "semana") renderSemana();
+    if (name === "treino") renderTreino();
+    window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-function renderHero(todayConfig) {
+/* =========================================================
+   RENDER — TELA TREINO
+========================================================= */
+function renderTreino() {
     const now = new Date();
-    $('#hero-weekday').textContent = WEEKDAY_PT[now.getDay()];
-    $('#hero-mission-num').textContent = `MISSÃO N° ${pad2(missionNumberToday())}`;
+    const tipo = dayType(now);
+    const t = state.treino;
+    const treino = PROGRAM.treinos[t];
+    const HERO_KANJI = { A: "鍛", B: "脚" };
 
-    if (todayConfig.type === 'rest') {
-        $('#hero-title-main').innerHTML = 'DIA DE<br>DESCANSO';
-        $('#hero-subtitle').textContent = todayConfig.label + ' — o músculo cresce no silêncio. Caminhe, hidrate, durma cedo.';
-        $('#hero-kanji').textContent = '休';
-        $('#stat-exercises').textContent = '0';
-        $('#stat-block').textContent = '—';
-        $$('.hero-stats')[0].style.opacity = '0.4';
-        const cta = $('#hero-cta');
-        if (cta) cta.style.display = 'none';
-        return;
-    }
+    // Cabeçalho / herói
+    $("#treino-kanji").textContent = HERO_KANJI[t];
+    $("#treino-weekday").textContent = WEEKDAY_PT[now.getDay()];
+    $("#treino-rotacao").textContent = weekRotation(now).join("·");
+    const sug = suggestedTreino(now);
+    const sugPrefix = tipo === "pesado" ? "SUGERIDO" : "PRÓXIMO PESADO";
+    $("#treino-sugerido").textContent = `${sugPrefix}: ${sug} · ${PROGRAM.treinos[sug].titulo}`;
+    $("#treino-title").textContent = treino.titulo;
+    $("#treino-foco").textContent = treino.foco;
 
-    const block = BLOCKS[todayConfig.block];
-    const titleHTML = block.title.includes(' ') ? block.title.replace(' ', '<br>') : block.title;
-    $('#hero-title-main').innerHTML = titleHTML;
-    $('#hero-subtitle').textContent = block.subtitle;
-    $('#hero-kanji').textContent = block.kanji;
-    $('#stat-exercises').textContent = block.exercises.length;
-    $('#stat-block').textContent = block.code;
-}
+    // Frase do dia
+    const m = pickManifesto();
+    $("#manifesto-text").textContent = m.pt;
+    $("#manifesto-jp").textContent = m.jp;
 
-function renderWorkout(todayConfig) {
-    const workoutEl = $('#workout');
-    const restEl = $('#rest');
+    // Toggle A/B
+    $$(".seg-btn").forEach((b) => b.classList.toggle("is-active", b.dataset.treino === t));
 
-    if (todayConfig.type === 'rest') {
-        workoutEl.hidden = true;
-        restEl.hidden = false;
-        return;
-    }
-
-    workoutEl.hidden = false;
-    restEl.hidden = true;
-
-    const block = BLOCKS[todayConfig.block];
-    $('#workout-title').textContent = block.title;
-    $('#progress-total').textContent = block.exercises.length;
-    $('#progress-done').textContent = '0';
-    $('#progress-bar').style.width = '0%';
-
-    const list = $('#exercises');
-    list.innerHTML = '';
-    block.exercises.forEach((ex, i) => {
-        const li = document.createElement('li');
-        li.className = 'ex';
-        li.style.animationDelay = (80 + i * 70) + 'ms';
-        li.innerHTML = `
-            <span class="ex-num">${pad2(i + 1)}</span>
-            <div class="ex-body">
-                <div class="ex-name">${ex.name}</div>
-                <div class="ex-cue">${ex.cue}</div>
-            </div>
-            <span class="ex-reps">${ex.reps}</span>
-            <span class="ex-check">
-                <svg viewBox="0 0 24 24"><polyline points="4 12 10 18 20 6"></polyline></svg>
-            </span>
-        `;
-        li.addEventListener('click', () => {
-            li.classList.toggle('is-done');
-            updateProgress();
-        });
-        list.appendChild(li);
-    });
-
-    $('#workout-foot').hidden = true;
-}
-
-function updateProgress() {
-    const total = $$('.ex').length;
-    const done = $$('.ex.is-done').length;
-    const pct = total === 0 ? 0 : (done / total) * 100;
-    $('#progress-done').textContent = done;
-    $('#progress-bar').style.width = pct + '%';
-
-    if (done === total && total > 0) {
-        $('#workout-foot').hidden = false;
+    // Banner do tipo de dia
+    const banner = $("#day-banner");
+    if (tipo === "pesado") {
+        banner.hidden = true;
     } else {
-        $('#workout-foot').hidden = true;
+        banner.hidden = false;
+        if (tipo === "leve") {
+            banner.className = "day-banner is-leve";
+            banner.innerHTML = `<span class="db-kanji">軽</span>
+                <div><strong>DIA LEVE</strong>
+                <p>Cardio Zona 2 · 30 min + acessório leve opcional (ponto fraco). Registro de carga abaixo é opcional.</p></div>`;
+        } else {
+            banner.className = "day-banner is-rec";
+            banner.innerHTML = `<span class="db-kanji">休</span>
+                <div><strong>RECUPERAÇÃO ATIVA</strong>
+                <p>Caminhada, mobilidade, cardio leve. O músculo cresce no silêncio. Volte mais letal.</p></div>`;
+        }
     }
-}
 
-function renderWeek() {
-    const grid = $('#week-grid');
-    grid.innerHTML = '';
-    const todayDow = new Date().getDay();
+    // Cards de exercício
+    const saved = todaysSession(t);
+    const wrap = $("#exercicios");
+    wrap.innerHTML = "";
 
-    for (let dow = 1; dow <= 6; dow++) renderWeekCell(grid, dow, todayDow);
-    renderWeekCell(grid, 0, todayDow); // Domingo no fim
-}
+    treino.exercicios.forEach((ex, i) => {
+        const metric = exMetric(ex);
+        const last = lastEntry(ex.id);
+        const lastSets = last ? (last.series[ex.id] || []) : [];
+        const savedSets = saved ? (saved.series[ex.id] || []) : [];
+        const subir = shouldIncreaseLoad(ex);
+        const esquema = ex.porTempo ? `${ex.series} × tempo`
+            : `${ex.series} × ${ex.reps[0]}–${ex.reps[1]}`;
 
-function renderWeekCell(grid, dow, todayDow) {
-    const cfg = WEEK[dow];
-    const cell = document.createElement('div');
-    cell.className = 'week-cell';
-    if (dow === todayDow) cell.classList.add('is-today');
-    if (cfg.type === 'rest') cell.classList.add('is-rest');
+        const card = document.createElement("article");
+        card.className = "card reveal";
+        card.style.transitionDelay = (i * 45) + "ms";
 
-    let blockTxt = '休';
-    let typeTxt = cfg.label || 'Descanso';
-    if (cfg.type === 'work') {
-        blockTxt = cfg.block;
-        typeTxt = BLOCKS[cfg.block].title.split(' ')[0]; // primeira palavra
-    }
-    cell.innerHTML = `
-        <span class="week-day-label">${WEEKDAY_PT[dow]}</span>
-        <span class="week-day-block">${blockTxt}</span>
-        <span class="week-day-type">${typeTxt}</span>
-    `;
-    grid.appendChild(cell);
-}
+        let setsHTML = "";
+        for (let s = 0; s < ex.series; s++) {
+            const sv = savedSets[s] || {};
+            const lv = lastSets[s];
+            const ref = lv && (lv.carga != null || lv.reps != null)
+                ? `últ. ${refText(lv, metric, true)}`
+                : "primeira vez";
+            const cargaVal = sv.carga != null ? sv.carga : "";
+            const repsVal = sv.reps != null ? sv.reps : "";
 
-function renderLibrary() {
-    const tabs = $$('.lib-tab');
-    const content = $('#library-content');
+            if (metric === "tempo") {
+                setsHTML += `
+                <div class="set-row" data-ex="${ex.id}" data-set="${s}">
+                    <span class="set-idx">${s + 1}</span>
+                    <label class="set-field set-field--solo">
+                        <input class="set-reps" type="number" inputmode="numeric" min="0"
+                            placeholder="0" value="${repsVal}" aria-label="Tempo em segundos série ${s + 1}">
+                        <span class="set-unit">seg</span>
+                    </label>
+                    <span class="set-ref">${ref}</span>
+                </div>`;
+            } else {
+                setsHTML += `
+                <div class="set-row" data-ex="${ex.id}" data-set="${s}">
+                    <span class="set-idx">${s + 1}</span>
+                    <label class="set-field">
+                        <input class="set-carga" type="number" inputmode="decimal" min="0" step="0.5"
+                            placeholder="0" value="${cargaVal}" aria-label="Carga série ${s + 1}">
+                        <span class="set-unit">kg</span>
+                    </label>
+                    <label class="set-field">
+                        <input class="set-reps" type="number" inputmode="numeric" min="0"
+                            placeholder="0" value="${repsVal}" aria-label="Reps série ${s + 1}">
+                        <span class="set-unit">reps</span>
+                    </label>
+                    <span class="set-ref">${ref}</span>
+                </div>`;
+            }
+        }
 
-    function show(code) {
-        const block = BLOCKS[code];
-        let html = `
-            <h4 class="lib-block-title">${block.title}</h4>
-            <span class="lib-block-sub">Bloco ${block.code} · ${block.kanji}</span>
-            <p style="color: var(--ink-2); margin-bottom: 20px; line-height: 1.6;">${block.subtitle}</p>
-        `;
-        block.exercises.forEach((ex, i) => {
-            html += `
-                <div class="lib-ex">
-                    <span class="lib-ex-num">${pad2(i + 1)}</span>
-                    <div>
-                        <div class="lib-ex-name">${ex.name}</div>
-                        <div class="lib-ex-cue">${ex.cue}</div>
-                    </div>
-                    <span class="lib-ex-reps">${ex.reps}</span>
+        card.innerHTML = `
+            <div class="card-head">
+                <div class="card-head-main">
+                    <span class="card-tag">${ex.musculo} · ${ex.tipo}</span>
+                    <h3 class="card-name">${ex.nome}</h3>
                 </div>
-            `;
-        });
-        content.innerHTML = html;
-    }
+                <span class="card-scheme">${esquema}</span>
+            </div>
+            ${subir ? `<div class="badge-up"><span class="badge-up-dot"></span>SUBA A CARGA — bateu o topo em tudo</div>`
+                : (last ? `<div class="card-goal">Meta: repetir a carga e ganhar reps até o topo da faixa.</div>` : "")}
+            <div class="sets">${setsHTML}</div>`;
 
-    tabs.forEach(t => {
-        t.addEventListener('click', () => {
-            tabs.forEach(x => x.classList.remove('is-active'));
-            t.classList.add('is-active');
-            show(t.dataset.block);
-        });
+        wrap.appendChild(card);
     });
 
-    show('A');
+    // Revela cards
+    requestAnimationFrame(() => $$("#exercicios .reveal").forEach((el) => el.classList.add("is-visible")));
 }
 
-// =====================================================
-// ANIMAÇÕES — scroll reveal, parallax, counter
-// =====================================================
-function setupReveals() {
-    const targets = document.querySelectorAll(
-        '.manifesto, .workout, .rest, .week, .library, .target, .bottom'
-    );
-    targets.forEach(el => el.classList.add('reveal'));
+/** Texto da referência de uma série, conforme métrica.
+ *  compact=true: sem espaços ao redor do × (cabe ao lado dos inputs no mobile). */
+function refText(set, metric, compact = false) {
+    if (metric === "tempo") return `${set.reps ?? "—"}s`;
+    if (metric === "reps") return `${set.reps ?? "—"} reps`;
+    const c = set.carga != null ? `${fmt(set.carga)}kg` : "—";
+    const r = set.reps != null ? `${set.reps}` : "—";
+    return compact ? `${c}×${r}` : `${c} × ${r}`;
+}
 
-    const io = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-                io.unobserve(entry.target);
-            }
+/** Coleta os inputs e salva a sessão atual. */
+function saveSession() {
+    const t = state.treino;
+    const treino = PROGRAM.treinos[t];
+    const series = {};
+    let hasData = false;
+
+    treino.exercicios.forEach((ex) => {
+        const rows = $$(`.set-row[data-ex="${ex.id}"]`);
+        const arr = rows.map((row) => {
+            const cargaEl = $(".set-carga", row);
+            const repsEl = $(".set-reps", row);
+            const carga = cargaEl && cargaEl.value !== "" ? parseFloat(cargaEl.value) : null;
+            const reps = repsEl && repsEl.value !== "" ? parseInt(repsEl.value, 10) : null;
+            if (carga != null || reps != null) hasData = true;
+            return { carga: isNaN(carga) ? null : carga, reps: isNaN(reps) ? null : reps };
         });
-    }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+        series[ex.id] = arr;
+    });
 
-    targets.forEach(el => io.observe(el));
+    if (!hasData) {
+        toast("Registre ao menos uma série antes de salvar.");
+        return;
+    }
+
+    const existing = todaysSession(t);
+    const sess = {
+        id: existing ? existing.id : Date.now(),
+        data: existing ? existing.data : new Date().toISOString(),
+        treino: t,
+        series
+    };
+
+    const ok = commitSession(sess);
+    toast(ok ? "Sessão registrada." : "Salvo só nesta sessão (storage indisponível).");
+    renderTreino();
+    buildProgressoOptions();
 }
 
-function setupParallax() {
-    const bg = document.querySelector('.hero-bg');
-    if (!bg) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+/* =========================================================
+   RENDER — TELA PROGRESSÃO
+========================================================= */
+function buildProgressoOptions() {
+    const sel = $("#prog-select");
+    if (!sel) return;
+    const prev = state.progEx || sel.value;
+    sel.innerHTML = "";
+    ["A", "B"].forEach((t) => {
+        const og = document.createElement("optgroup");
+        og.label = `${t} · ${PROGRAM.treinos[t].titulo}`;
+        PROGRAM.treinos[t].exercicios.forEach((ex) => {
+            const o = document.createElement("option");
+            o.value = ex.id;
+            o.textContent = ex.nome;
+            og.appendChild(o);
+        });
+        sel.appendChild(og);
+    });
+    if (prev && EXERCISES[prev]) sel.value = prev;
+    state.progEx = sel.value;
+}
 
+function renderProgresso() {
+    if (!state.progEx) buildProgressoOptions();
+    const ex = EXERCISES[state.progEx];
+    if (!ex) return;
+
+    const metric = exMetric(ex);
+    const hist = historyOf(ex.id);
+
+    const unitLabel = metric === "tempo" ? "segundos" : metric === "reps" ? "reps" : "kg";
+    $("#prog-chart-label").textContent = `Melhor série · ${unitLabel}`;
+
+    // Pontos: melhor série por sessão
+    const points = hist.map((s) => {
+        const best = bestSet(s.series[ex.id], metric);
+        return { date: s.data, best, value: setValue(best, metric) };
+    }).filter((p) => p.best);
+
+    // Stats
+    const statsWrap = $("#prog-stats");
+    const chartWrap = $("#prog-chart");
+    const histWrap = $("#prog-history");
+
+    if (!points.length) {
+        statsWrap.innerHTML = "";
+        chartWrap.innerHTML = `<p class="empty">Sem registros ainda.<br>Treine, registre e o número aparece aqui.</p>`;
+        histWrap.innerHTML = "";
+        return;
+    }
+
+    const first = points[0];
+    const latest = points[points.length - 1];
+
+    // Variação (no 1RM est. para kg; no próprio valor pra tempo/reps)
+    const firstCmp = metric === "kg" ? epley(first.best.carga, first.best.reps) : first.value;
+    const lastCmp = metric === "kg" ? epley(latest.best.carga, latest.best.reps) : latest.value;
+    const varPct = firstCmp > 0 ? ((lastCmp - firstCmp) / firstCmp) * 100 : 0;
+    const varSign = varPct > 0 ? "+" : "";
+    const varClass = varPct > 0 ? "up" : varPct < 0 ? "down" : "flat";
+
+    const bestNow = refText(latest.best, metric, true);
+    const e1 = metric === "kg" ? Math.round(epley(latest.best.carga, latest.best.reps)) : null;
+
+    statsWrap.innerHTML = `
+        <div class="stat-box">
+            <span class="stat-label">Melhor série atual</span>
+            <span class="stat-val">${bestNow}</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-label">1RM estimado</span>
+            <span class="stat-val">${e1 != null ? fmt(e1) + " kg" : "—"}</span>
+        </div>
+        <div class="stat-box">
+            <span class="stat-label">Variação${metric === "kg" ? " (1RM)" : ""}</span>
+            <span class="stat-val var-${varClass}">${varSign}${fmt(varPct)}%</span>
+        </div>`;
+
+    chartWrap.innerHTML = buildChart(points, metric);
+
+    // Histórico (mais recente primeiro)
+    histWrap.innerHTML = `<div class="hist-head">Histórico</div>` +
+        points.slice().reverse().slice(0, 16).map((p) => {
+            const d = new Date(p.date);
+            const date = `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)}`;
+            const e = metric === "kg" ? ` · 1RM ${fmt(Math.round(epley(p.best.carga, p.best.reps)))}` : "";
+            return `<div class="hist-row">
+                <span class="hist-date">${date}</span>
+                <span class="hist-val">${refText(p.best, metric)}</span>
+                <span class="hist-e1">${e}</span>
+            </div>`;
+        }).join("");
+}
+
+/** Gráfico de linha em SVG feito à mão — visual Toji. */
+function buildChart(points, metric) {
+    const W = 320, H = 150, padL = 8, padR = 8, padT = 14, padB = 22;
+    const vals = points.map((p) => p.value);
+    let min = Math.min(...vals), max = Math.max(...vals);
+    if (min === max) { min = Math.max(0, min - 1); max = max + 1; }
+    const span = max - min || 1;
+
+    const n = points.length;
+    const x = (i) => padL + (n === 1 ? (W - padL - padR) / 2 : (i / (n - 1)) * (W - padL - padR));
+    const y = (v) => padT + (1 - (v - min) / span) * (H - padT - padB);
+
+    const coords = points.map((p, i) => ({ cx: x(i), cy: y(p.value), v: p.value }));
+    const line = coords.map((c, i) => `${i === 0 ? "M" : "L"}${c.cx.toFixed(1)},${c.cy.toFixed(1)}`).join(" ");
+    const area = `${line} L${coords[n - 1].cx.toFixed(1)},${H - padB} L${coords[0].cx.toFixed(1)},${H - padB} Z`;
+
+    const dots = coords.map((c, i) =>
+        `<circle cx="${c.cx.toFixed(1)}" cy="${c.cy.toFixed(1)}" r="${i === n - 1 ? 4 : 2.6}"
+            class="${i === n - 1 ? "chart-dot chart-dot--last" : "chart-dot"}"/>`).join("");
+
+    const lastLabel = `<text x="${coords[n - 1].cx.toFixed(1)}" y="${(coords[n - 1].cy - 9).toFixed(1)}"
+        class="chart-tip" text-anchor="${n === 1 ? "middle" : "end"}">${fmt(coords[n - 1].v)}</text>`;
+
+    return `
+    <svg viewBox="0 0 ${W} ${H}" class="chart-svg" preserveAspectRatio="none" role="img" aria-label="Curva da melhor série">
+        <defs>
+            <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="var(--violet)" stop-opacity="0.28"/>
+                <stop offset="100%" stop-color="var(--violet-deep)" stop-opacity="0"/>
+            </linearGradient>
+        </defs>
+        <line x1="${padL}" y1="${H - padB}" x2="${W - padR}" y2="${H - padB}" class="chart-axis"/>
+        <path d="${area}" fill="url(#chartFill)"/>
+        <path d="${line}" class="chart-line" fill="none"/>
+        ${dots}
+        ${lastLabel}
+        <text x="${padL}" y="${H - 6}" class="chart-min">${fmt(min)}</text>
+        <text x="${W - padR}" y="${H - 6}" class="chart-max" text-anchor="end">${fmt(max)}</text>
+    </svg>`;
+}
+
+/* =========================================================
+   RENDER — TELA SEMANA
+========================================================= */
+function renderSemana() {
+    const now = new Date();
+    const mon = startOfWeekMonday(now);
+    const todayK = todayKey();
+
+    // Strip Seg–Dom
+    const grid = $("#week-grid");
+    grid.innerHTML = "";
+    let pesadosFeitos = 0;
+
+    for (let i = 0; i < 7; i++) {
+        const d = new Date(mon);
+        d.setDate(mon.getDate() + i);
+        const dk = dateKey(d);
+        const tipo = dayType(d);
+        const sess = sessions.find((s) => dateKey(s.data) === dk);
+        const treinado = !!sess;
+        if (treinado && tipo === "pesado") pesadosFeitos++;
+
+        const cell = document.createElement("div");
+        cell.className = "wk-cell";
+        if (dk === todayK) cell.classList.add("is-today");
+        if (treinado) cell.classList.add("is-done");
+        if (tipo !== "pesado") cell.classList.add("is-soft");
+
+        const mark = treinado ? (sess.treino) : (tipo === "pesado" ? "·" : tipo === "recuperacao" ? "休" : "軽");
+        cell.innerHTML = `
+            <span class="wk-day">${WEEKDAY_PT[d.getDay()]}</span>
+            <span class="wk-mark">${mark}</span>
+            <span class="wk-date">${pad2(d.getDate())}</span>`;
+        grid.appendChild(cell);
+    }
+
+    // Contador X/3
+    $("#week-count").textContent = pesadosFeitos;
+    const rail = $("#week-count-bar");
+    if (rail) rail.style.width = Math.min(100, (pesadosFeitos / 3) * 100) + "%";
+
+    // Rotação da semana
+    $("#week-rotacao").textContent = weekRotation(now).join(" · ");
+
+    // Total de registros
+    $("#week-total").textContent = sessions.length;
+}
+
+/* =========================================================
+   TOAST
+========================================================= */
+let toastTimer = null;
+function toast(msg) {
+    const el = $("#toast");
+    el.textContent = msg;
+    el.classList.add("is-show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("is-show"), 2600);
+}
+
+/* =========================================================
+   EVENTOS
+========================================================= */
+function wireEvents() {
+    // Nav inferior
+    $$(".tab").forEach((t) => t.addEventListener("click", () => setScreen(t.dataset.screen)));
+
+    // Toggle A/B
+    $$(".seg-btn").forEach((b) => b.addEventListener("click", () => {
+        state.treino = b.dataset.treino;
+        renderTreino();
+    }));
+
+    // Salvar sessão
+    $("#btn-save").addEventListener("click", saveSession);
+
+    // Progressão: troca de exercício
+    $("#prog-select").addEventListener("change", (e) => {
+        state.progEx = e.target.value;
+        renderProgresso();
+    });
+
+    // Apagar tudo
+    $("#btn-clear").addEventListener("click", () => {
+        if (!sessions.length) { toast("Nada para apagar."); return; }
+        if (confirm("Apagar TODOS os registros? Esta ação não tem volta.")) {
+            store.clear();
+            sessions = [];
+            buildProgressoOptions();
+            renderTreino();
+            renderSemana();
+            renderProgresso();
+            toast("Registros apagados.");
+        }
+    });
+}
+
+/* Parallax sutil na imagem do herói. */
+function setupParallax() {
+    const bg = $(".hero-bg");
+    if (!bg || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     let ticking = false;
-    function onScroll() {
+    const onScroll = () => {
         if (ticking) return;
         ticking = true;
         requestAnimationFrame(() => {
-            const y = window.scrollY;
-            // Move o fundo do hero ~20% mais devagar que o scroll
-            bg.style.transform = `translate3d(0, ${y * 0.25}px, 0) scale(1.04)`;
+            bg.style.transform = `translate3d(0, ${window.scrollY * 0.18}px, 0) scale(1.06)`;
             ticking = false;
         });
-    }
-    window.addEventListener('scroll', onScroll, { passive: true });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
 }
 
-function animateCount(el, target, duration = 1200) {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        el.textContent = target;
-        return;
-    }
-    const startTime = performance.now();
-    function tick(now) {
-        const t = Math.min(1, (now - startTime) / duration);
-        // easeOutCubic
-        const eased = 1 - Math.pow(1 - t, 3);
-        el.textContent = Math.round(target * eased);
-        if (t < 1) requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-}
-
-function animateHeroStats() {
-    const stats = document.querySelectorAll('.hero-stats .stat-num');
-    if (!stats.length) return;
-
-    // Coleta alvos numéricos ANTES de zerar
-    const targets = Array.from(stats).map(s => {
-        const n = parseInt(s.textContent.trim(), 10);
-        return isNaN(n) ? null : n;
-    });
-
-    // Se nenhum é numérico (dia de descanso), pula
-    if (targets.every(t => t === null || t === 0)) return;
-
-    // Zera os numéricos imediatamente
-    stats.forEach((s, i) => {
-        if (targets[i] !== null) s.textContent = '0';
-    });
-
-    // Anima após pequeno delay (alinha com hero entrance)
-    setTimeout(() => {
-        stats.forEach((s, i) => {
-            if (targets[i] !== null) {
-                animateCount(s, targets[i], 1100 + i * 120);
-            }
-        });
-    }, 600);
-}
-
-// =====================================================
-// INIT
-// =====================================================
+/* =========================================================
+   INIT
+========================================================= */
 function init() {
-    const dow = new Date().getDay();
-    const todayConfig = WEEK[dow];
-
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./sw.js").catch(() => { });
+    }
     renderTopbar();
-    renderManifesto();
-    renderHero(todayConfig);
-    renderWorkout(todayConfig);
-    renderWeek();
-    renderLibrary();
-
-    // Anima depois do render
-    setupReveals();
+    buildProgressoOptions();
+    wireEvents();
+    renderTreino();
+    setScreen("treino");
     setupParallax();
-    animateHeroStats();
 }
 
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener("DOMContentLoaded", init);

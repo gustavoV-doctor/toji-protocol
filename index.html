@@ -3,180 +3,143 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#000000">
-    <title>Protocolo Restrição Celestial — 禪院甚爾</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#0a0a0c">
+    <title>TOJI — Sem energia amaldiçoada. Só execução.</title>
+    <meta name="description" content="Tracker de recomposição com sobrecarga progressiva. Não é caderninho: é treinador.">
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Toji Protocol">
+    <meta name="apple-mobile-web-app-title" content="TOJI">
     <link rel="apple-touch-icon" href="assets/icon_512.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Serif+JP:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Serif+JP:wght@400;700;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-    <div class="grain"></div>
-    <div class="aura"></div>
+    <div class="grain" aria-hidden="true"></div>
+    <div class="aura" aria-hidden="true"></div>
+    <div class="watermark" aria-hidden="true">禪院甚爾</div>
 
     <header class="topbar">
-        <div class="topbar-left">
-            <span class="brand-kanji">禪院</span>
-            <span class="brand-label">PROTOCOLO · 拘禁</span>
+        <div class="brand">
+            <span class="brand-kanji">甚爾</span>
+            <span class="brand-name">TOJI</span>
         </div>
-        <div class="topbar-right">
-            <span class="topbar-date" id="topbar-date"></span>
-        </div>
+        <span class="topbar-date" id="topbar-date"></span>
     </header>
 
     <main class="shell">
 
-        <!-- HERO / MISSÃO DO DIA -->
-        <section class="hero">
-            <div class="hero-bg" aria-hidden="true"></div>
-            <div class="hero-grid">
-                <div class="hero-meta">
-                    <span class="eyebrow"><span id="hero-mission-num">MISSÃO N° 01</span> · <span id="hero-weekday">SEG</span></span>
+        <!-- ============ TELA: TREINO ============ -->
+        <section class="screen is-active" data-screen="treino" id="screen-treino">
+            <div class="t-hero">
+                <div class="hero-bg" aria-hidden="true"></div>
+                <span class="hero-kanji" id="treino-kanji" aria-hidden="true">鍛</span>
+                <div class="t-eyebrow">
+                    <b id="treino-weekday">TER</b>
+                    <span class="dot">/</span>
+                    <span>ROTAÇÃO <b id="treino-rotacao">A·B·A</b></span>
                 </div>
+                <h1 class="t-title" id="treino-title">SUPERIOR</h1>
+                <p class="t-foco" id="treino-foco">peito · costas · ombro · braço</p>
+                <span class="t-sug" id="treino-sugerido">SUGERIDO: A</span>
+            </div>
 
-                <h1 class="hero-title">
-                    <span class="hero-title-line" id="hero-title-main">SUPERIOR<br>PESADO</span>
-                </h1>
+            <div class="manifesto">
+                <p class="manifesto-text" id="manifesto-text">Sem energia amaldiçoada. Só execução.</p>
+                <p class="manifesto-jp" id="manifesto-jp">呪力はいらない。実行だけだ。</p>
+            </div>
 
-                <p class="hero-subtitle" id="hero-subtitle">Peito, costas, ombro e braço — carga, densidade e silêncio.</p>
+            <div class="segmented" role="tablist" aria-label="Escolher treino">
+                <button class="seg-btn is-active" data-treino="A">A<small>SUPERIOR</small></button>
+                <button class="seg-btn" data-treino="B">B<small>INFERIOR</small></button>
+            </div>
 
-                <div class="hero-stats">
-                    <div class="stat">
-                        <span class="stat-num" id="stat-exercises">6</span>
-                        <span class="stat-label">exercícios</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-num">45</span>
-                        <span class="stat-label">minutos</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-num" id="stat-block">A</span>
-                        <span class="stat-label">bloco</span>
-                    </div>
-                </div>
+            <div class="day-banner" id="day-banner" hidden></div>
 
-                <a href="#workout" class="hero-cta" id="hero-cta">
-                    <span class="hero-cta-label">INICIAR TREINO</span>
-                    <span class="hero-cta-arrow" aria-hidden="true">→</span>
-                </a>
+            <div id="exercicios"></div>
 
-                <div class="hero-kanji-side" aria-hidden="true">
-                    <span id="hero-kanji">鍛</span>
-                </div>
+            <div class="save-bar">
+                <button class="btn-primary" id="btn-save">REGISTRAR SESSÃO</button>
             </div>
         </section>
 
-        <!-- MANIFESTO DO DIA -->
-        <section class="manifesto">
-            <p class="manifesto-text" id="manifesto-text">Sem talento. Só execução.</p>
-            <p class="manifesto-jp" id="manifesto-jp">才能はいらない。実行だけだ。</p>
-            <div class="manifesto-rule"></div>
+        <!-- ============ TELA: PROGRESSÃO ============ -->
+        <section class="screen" data-screen="progresso" id="screen-progresso">
+            <div class="sec-head">
+                <span class="sec-eyebrow">O TERMÔMETRO</span>
+                <h2 class="sec-title">Progressão <span class="sec-kanji">伸</span></h2>
+            </div>
+
+            <div class="prog-select-wrap">
+                <select id="prog-select" aria-label="Escolher exercício"></select>
+            </div>
+
+            <div class="prog-stats" id="prog-stats"></div>
+
+            <div class="prog-chart-wrap">
+                <div class="prog-chart-label" id="prog-chart-label">Melhor série · kg</div>
+                <div id="prog-chart"></div>
+            </div>
+
+            <div class="prog-history" id="prog-history"></div>
         </section>
 
-        <!-- TREINO DE HOJE -->
-        <section class="workout" id="workout">
-            <div class="workout-header">
-                <div class="workout-header-left">
-                    <span class="workout-eyebrow">A SESSÃO</span>
-                    <h2 class="workout-title" id="workout-title">SUPERIOR PESADO</h2>
+        <!-- ============ TELA: SEMANA ============ -->
+        <section class="screen" data-screen="semana" id="screen-semana">
+            <div class="sec-head">
+                <span class="sec-eyebrow">A CONSISTÊNCIA</span>
+                <h2 class="sec-title">Semana <span class="sec-kanji">週</span></h2>
+            </div>
+
+            <div class="week-count-box">
+                <div class="week-count-top">
+                    <span class="week-count-big"><span id="week-count">0</span>/3</span>
+                    <span class="week-count-label">treinos<br>pesados</span>
                 </div>
-                <div class="workout-progress">
-                    <span class="progress-text"><span id="progress-done">0</span>/<span id="progress-total">6</span></span>
-                    <div class="progress-rail">
-                        <div class="progress-bar" id="progress-bar"></div>
-                    </div>
+                <div class="week-count-rail"><div class="week-count-bar" id="week-count-bar"></div></div>
+            </div>
+
+            <div class="week-grid" id="week-grid"></div>
+
+            <div class="week-info">
+                <span class="wi-label">Rotação desta semana</span>
+                <div class="wi-val" id="week-rotacao">A · B · A</div>
+                <p>Ter · Qui · Sáb são os dias pesados. A grade reseta toda segunda.</p>
+            </div>
+
+            <div class="week-leves">
+                <div class="leve-item">
+                    <span class="li-k">軽</span>
+                    <div><strong>Seg · Qua · Sex</strong>
+                        <p>Cardio Zona 2 · 30 min + acessório leve opcional (ponto fraco).</p></div>
+                </div>
+                <div class="leve-item">
+                    <span class="li-k">休</span>
+                    <div><strong>Domingo</strong>
+                        <p>Recuperação ativa: caminhada, mobilidade, cardio leve.</p></div>
                 </div>
             </div>
 
-            <ol class="exercises" id="exercises">
-                <!-- Renderizado por JS -->
-            </ol>
-
-            <div class="workout-foot" id="workout-foot" hidden>
-                <p class="foot-text">Sessão fechada. Sem foto, sem post. Continue.</p>
-                <p class="foot-jp">語る前に積み上げろ。</p>
+            <div class="danger">
+                <button class="btn-danger" id="btn-clear">Apagar todos os registros</button>
+                <p class="week-total"><span id="week-total">0</span> sessões registradas no total</p>
             </div>
-        </section>
-
-        <!-- DIA DE DESCANSO -->
-        <section class="rest" id="rest" hidden>
-            <span class="rest-kanji">休</span>
-            <h2 class="rest-title">DIA DE DESCANSO</h2>
-            <p class="rest-text">Até o predador dorme. Músculo cresce no silêncio.<br>Caminhe. Coma proteína. Volte mais letal.</p>
-            <p class="rest-jp">休息も鍛錬の一部。</p>
-        </section>
-
-        <!-- SEMANA -->
-        <section class="week">
-            <div class="section-head">
-                <span class="eyebrow">A SEMANA</span>
-                <h3 class="section-title">Rotação 週</h3>
-            </div>
-            <div class="week-grid" id="week-grid">
-                <!-- Renderizado por JS -->
-            </div>
-        </section>
-
-        <!-- TODOS OS TREINOS -->
-        <section class="library">
-            <div class="section-head">
-                <span class="eyebrow">A BIBLIOTECA</span>
-                <h3 class="section-title">Os quatro blocos 全</h3>
-            </div>
-            <div class="library-tabs" id="library-tabs">
-                <button class="lib-tab is-active" data-block="A">Bloco A · Superior pesado</button>
-                <button class="lib-tab" data-block="B">Bloco B · Inferior</button>
-                <button class="lib-tab" data-block="C">Bloco C · Superior volume</button>
-                <button class="lib-tab" data-block="D">Bloco D · Inferior + cardio</button>
-            </div>
-            <div class="library-content" id="library-content">
-                <!-- Renderizado por JS -->
-            </div>
-        </section>
-
-        <!-- DIAGNÓSTICO / OBJETIVO -->
-        <section class="target">
-            <div class="section-head">
-                <span class="eyebrow">O ALVO</span>
-                <h3 class="section-title">Fase 1 · 16 semanas</h3>
-            </div>
-            <div class="target-grid">
-                <div class="target-card">
-                    <span class="t-label">Estado</span>
-                    <p class="t-val">98,7 kg · 31% gordura</p>
-                </div>
-                <div class="target-card">
-                    <span class="t-label">Meta</span>
-                    <p class="t-val">−0,5 a −1,0%/semana</p>
-                </div>
-                <div class="target-card">
-                    <span class="t-label">Proteína</span>
-                    <p class="t-val">1,8–2,2 g/kg/dia</p>
-                </div>
-                <div class="target-card">
-                    <span class="t-label">Passos</span>
-                    <p class="t-val">8–10 mil/dia</p>
-                </div>
-            </div>
-            <p class="target-note">Você não está construindo o Toji final. Está destravando o corpo escondido sob o excesso. Tire primeiro. Depois esculpe.</p>
         </section>
 
     </main>
 
-    <footer class="bottom">
-        <div class="bottom-inner">
-            <p class="bottom-kanji">禪院甚爾</p>
-            <p class="bottom-en">Protocolo Restrição Celestial · v2</p>
-            <p class="bottom-jp">弱さを拒む者のために鍛えられた。</p>
-        </div>
-    </footer>
+    <nav class="tabbar" aria-label="Navegação">
+        <button class="tab is-active" data-screen="treino"><span class="tab-k">鍛</span>Treino</button>
+        <button class="tab" data-screen="progresso"><span class="tab-k">伸</span>Progresso</button>
+        <button class="tab" data-screen="semana"><span class="tab-k">週</span>Semana</button>
+    </nav>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
     <script src="script.js"></script>
 </body>

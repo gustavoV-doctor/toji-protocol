@@ -1,11 +1,11 @@
 {
-    "name": "Protocolo Restrição Celestial",
-    "short_name": "Toji Protocol",
-    "description": "Treinamento focado em força bruta e explosão, inspirado no Toji Fushiguro.",
+    "name": "TOJI — Tracker de recomposição",
+    "short_name": "TOJI",
+    "description": "Não é caderninho: é treinador. Sobrecarga progressiva, registro de carga × reps e progressão. Sem energia amaldiçoada. Só execução.",
     "start_url": "./index.html",
     "display": "standalone",
-    "background_color": "#050505",
-    "theme_color": "#050505",
+    "background_color": "#0a0a0c",
+    "theme_color": "#0a0a0c",
     "icons": [
         {
             "src": "assets/icon_512.png",
